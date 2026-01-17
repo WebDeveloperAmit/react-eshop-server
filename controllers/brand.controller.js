@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import Brand from '../models/brand.model.js';
 
 export const getAllBrands = async (req, res) => {
@@ -35,13 +37,32 @@ export const createBrand = async (req, res) => {
 export const deleteBrand = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedBrand = await Brand.findByIdAndDelete(id);
-        if (!deletedBrand) {
+        const brand = await Brand.findById(id);
+        if (!brand) {
             return res.status(404).json({ message: "Brand not found" });
         }
-        return res.status(200).json({ message: "Brand deleted successfully", status: "success" });
+        if (brand.brand_image_url) {
+            const imagePath = path.join(
+                process.cwd(),
+                'public',
+                brand.brand_image_url
+            );
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            } else {
+                console.warn("Image file does not exist:", imagePath);
+            }
+        }
+        await Brand.findByIdAndDelete(id);
+        return res.status(200).json({ 
+            message: "Brand deleted successfully", 
+            status: "success" 
+        });
     } catch (error) {
         console.error("Error deleting brand:", error);
-        return res.status(500).json({ message: "Server error", status: "error" });
+        return res.status(500).json({ 
+            message: "Server error", 
+            status: "error" 
+        });
     }
 }

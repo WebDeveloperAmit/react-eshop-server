@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import Category from "../models/category.model.js";
 
 // Controller to get all categories
@@ -40,14 +42,38 @@ export const createCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
     try {
-        const { id } = req.params;
-        const deletedCategory = await Category.findByIdAndDelete(id);
-        if (!deletedCategory) {
-            return res.status(404).json({ message: "Category not found" });
+        const { id } = req.params; 
+        const category = await Category.findById(id);
+        if (!category) {
+            return res.status(404).json({ 
+                message: "Category not found" 
+            });
         }
-        return res.status(200).json({ message: "Category deleted successfully", status: "success" });
+        if (category.category_image_url) {
+            const imagePath = path.join(
+                process.cwd,
+                'public',
+                category.category_image_url
+            );
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            } else {
+                console.warn("Image file does not exist:", imagePath);
+            }
+            
+        } else {
+            console.warn("Image file does not exist:", imagePath);
+        }
+        await Category.findByIdAndDelete(id);
+        return res.status(200).json({ 
+            message: "Category deleted successfully", 
+            status: "success" 
+        });
     } catch (error) {
         console.error("Error deleting category:", error);
-        return res.status(500).json({ message: "Server error", status: "error" });
+        return res.status(500).json({ 
+            message: "Server error", 
+            status: "error" 
+        });
     }
 }
