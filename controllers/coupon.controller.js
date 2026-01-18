@@ -38,6 +38,24 @@ export const createCoupon = async (req, res) => {
     }
 }
 
+export const getCoupon = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const coupon = Coupon.findById(id);
+        if (!coupon) {
+            return res.status(404).json({ message: "Coupon not found" });
+        }
+        return res.status(200).json({
+            message: "Coupon fetched successfully",
+            status: "success",
+            data: coupon
+        });
+    } catch (error) {
+        console.error("Error coupon fetching...:", error);
+        return res.status(500).json({ message: "Server Error", status: "error" });
+    }
+}
+
 export const deleteCoupon = async (req, res) => {
     try {
         const { id } = req.params;

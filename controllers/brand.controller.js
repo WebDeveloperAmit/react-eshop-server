@@ -34,6 +34,24 @@ export const createBrand = async (req, res) => {
     }
 }
 
+export const getBrand = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const brand = Brand.findById(id);
+        if (!brand) {
+            return res.status(404).json({ message: "Brand not found" });
+        }
+        return res.status(200).json({
+            message: "Brand fetched successfully",
+            status: "success",
+            data: brand
+        });
+    } catch (error) {
+        console.error("Error brand fetching...:", error);
+        return res.status(500).json({ message: "Server Error", status: "error" });
+    }
+}
+
 export const deleteBrand = async (req, res) => {
     try {
         const { id } = req.params;

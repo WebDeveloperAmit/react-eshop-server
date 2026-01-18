@@ -1,5 +1,5 @@
 import express from "express"; // Import the Express library
-import { createCategory, deleteCategory, getAllCategories } from "../controllers/category.controller.js";
+import { createCategory, deleteCategory, getAllCategories, getCategory } from "../controllers/category.controller.js";
 import { isAdmin } from "../middlewares/admin.middleware.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { createUploadMiddleware } from "../middlewares/upload.middleware.js";
@@ -11,6 +11,8 @@ const uploadCategoryImage = createUploadMiddleware("categories");
 router.get("/categories", protect, isAdmin, getAllCategories); // verifies token, attaches req.user / checks role === "admin"
 
 router.post("/create-category", protect, isAdmin, uploadCategoryImage.single('category_image'), createCategory);
+
+router.get("/category/:id", protect, isAdmin, getCategory);
 
 router.delete("/category-delete/:id", protect, isAdmin, deleteCategory);
 

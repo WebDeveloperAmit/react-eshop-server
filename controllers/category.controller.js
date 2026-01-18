@@ -40,6 +40,24 @@ export const createCategory = async (req, res) => {
     }
 }
 
+export const getCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const category = Category.findById(id);
+        if (!category) {
+            return res.status(404).json({ message: "Category not found" });
+        }
+        return res.status(200).json({
+            message: "Category fetched successfully",
+            status: "success",
+            data: category
+        });
+    } catch (error) {
+        console.error("Error category fetching...:", error);
+        return res.status(500).json({ message: "Server Error", status: "error" });
+    }
+}
+
 export const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params; 
