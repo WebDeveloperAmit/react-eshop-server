@@ -1,5 +1,5 @@
 import express from "express";
-import { createSlider, deleteSlider, getAllSliders } from "../controllers/slider.controller.js";
+import { createSlider, deleteSlider, getAllSliders, getSlider, updateSlider } from "../controllers/slider.controller.js";
 import { isAdmin } from "../middlewares/admin.middleware.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { createUploadMiddleware } from "../middlewares/upload.middleware.js";
@@ -11,6 +11,10 @@ router.get("/sliders", protect, isAdmin, getAllSliders);
 
 router.post("/create-slider", protect, isAdmin, uploadSliderImage.single("slider_image"), createSlider);
 
-router.delete("/delete-slider/:id", protect, isAdmin, deleteSlider);
+router.get("/slider/:id", protect, isAdmin, getSlider);
+
+router.put("/slider/update/:id", protect, isAdmin, uploadSliderImage.single("slider_image"), updateSlider);
+
+router.delete("/slider/delete/:id", protect, isAdmin, deleteSlider);
 
 export default router;

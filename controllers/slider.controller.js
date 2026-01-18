@@ -34,6 +34,84 @@ export const createSlider = async (req, res) => {
     }
 }
 
+export const getSlider = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const slider = await Slider.findById(id);
+        if (!slider) {
+            return res.status(404).json({ message: "Slider not found" });
+        }
+        return res.status(200).json({
+            message: "Slider fetched successfully",
+            status: "success",
+            data: slider
+        });
+    } catch (error) {
+        console.error("Error slider fetching...:", error);
+        return res.status(500).json({ message: "Server Error", status: "error" });
+    }
+}
+
+export const updateSlider = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { 
+            cat_slug, 
+            slider_title, 
+            slider_heading, 
+            slider_sub_heading 
+        } = req.body;
+
+        if (!slider_title || !slider_heading || !slider_sub_heading) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const slider = await Slider.findById(id);
+        if (!slider) {
+            return res.status(404).json({ message: "Slider not found" });
+        }
+
+        let slider_image_url = slider.slider_image_url;
+
+        if (req.file) {
+            
+            if (slider.slider_image_url) {
+                const oldImagePath = path.join(
+                    process.cwd(),
+                    'public',
+                    slider.slider_image_url
+                );
+
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+
+            slider_image_url = `uploads/sliders/${req.file.filename}`;
+        }
+
+        slider.cat_slug = cat_slug ?? slider.cat_slug;
+        slider.slider_title = slider_title ?? slider.slider_title;
+        slider.slider_heading = slider_heading ?? slider.slider_heading;
+        slider.slider_sub_heading = slider_sub_heading ?? slider.slider_sub_heading;
+        slider.slider_image_url = slider_image_url;
+
+        await slider.save();
+
+        return res.status(200).json({ 
+            message: "Slider updated successfully", 
+            status: "success", 
+            data: slider 
+        });
+    } catch (error) {
+        console.error("Error create sliders:", error);
+        return res.status(500).json({ 
+            message: "Server Error", 
+            status: "error" 
+        });
+    }
+}
+
 export const deleteSlider = async (req, res) => {
     try {
         const { id } = req.params;
@@ -55,16 +133,12 @@ export const deleteSlider = async (req, res) => {
             } else {
                 console.warn("Slider image file does not exist:", imagePath);
             }
-            // fs.unlink(imagePath, (err) => {
-            //     if (err) {
-            //         console.error("Error deleting slider image:", err);
-            //     }
-            // });
         }
         await Slider.findByIdAndDelete(id);
+
         return res.status(200).json({ 
             message: "Slider deleted successfully", 
-            status: "success" 
+            status: "success",
         });
     } catch (error) {
         console.error("Error deleting slider:", error);
