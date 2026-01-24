@@ -62,13 +62,13 @@ export const updateSlider = async (req, res) => {
             slider_sub_heading 
         } = req.body;
 
-        if (!slider_title || !slider_heading || !slider_sub_heading) {
-            return res.status(400).json({ message: "All fields are required" });
-        }
-
         const slider = await Slider.findById(id);
         if (!slider) {
             return res.status(404).json({ message: "Slider not found" });
+        }
+
+        if (!slider_title || !slider_heading || !slider_sub_heading) {
+            return res.status(400).json({ message: "All fields are required" });
         }
 
         let slider_image_url = slider.slider_image_url;
