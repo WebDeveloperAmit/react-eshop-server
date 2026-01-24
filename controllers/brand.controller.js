@@ -52,6 +52,53 @@ export const getBrand = async (req, res) => {
     }
 }
 
+export const updateBrand = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { brand_name, brand_slug } = req.body;
+
+        const brand = await Brand.findById(id);
+        if (!brand) {
+            return res.status(404).json({ message: "Brand not found" });
+        }
+
+        if (!brand_name || brand_name.trim() === '') {
+            return res.status(400).json({ message: "Brand name is required" });
+        }
+
+        let brand_image_url = brand.brand_image_url;
+        if (req.file) {
+
+            if (brand.brand_image_url) {
+                const oldBrandImage = path.join(
+                    process.cwd(),
+                    'public',
+                    brand.brand_image_url
+                );
+                if (fs.existsSync(oldBrandImage)) {
+                    fs.unlinkSync(oldBrandImage);
+                }
+            }
+
+            brand_image_url = `uploads/brands/${req.file.filename}`;
+        }
+
+        brand.brand_name = brand_name ?? brand.brand_name;
+        brand.brand_slug = brand_slug ?? brand.brand_slug;
+        brand.brand_image_url = brand_image_url ?? brand.brand_image_url;
+        await brand.save();
+        
+        return res.status(200).json({
+            message: "Brand updated successfully",
+            status: "success",
+            data: brand
+        });
+    } catch (error) {
+        console.error('Brand update error:', error.message);
+        return res.status(500).json({ message: error.message, status: 'error' });
+    }
+}
+
 export const deleteBrand = async (req, res) => {
     try {
         const { id } = req.params;
