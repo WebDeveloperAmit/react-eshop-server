@@ -41,7 +41,7 @@ export const createCoupon = async (req, res) => {
 export const getCoupon = async (req, res) => {
     try {
         const { id } = req.params;
-        const coupon = Coupon.findById(id);
+        const coupon = await Coupon.findById(id);
         if (!coupon) {
             return res.status(404).json({ message: "Coupon not found" });
         }
@@ -65,7 +65,6 @@ export const updateCoupon = async (req, res) => {
             discount, 
             expiry_date, 
             usage_limit, 
-            used_count, 
             min_purchase 
         } = req.body || {};
 
@@ -88,7 +87,6 @@ export const updateCoupon = async (req, res) => {
         coupon.discount = discount ?? coupon.discount;
         coupon.expiry_date = new Date(expiry_date) ?? coupon.expiry_date;
         coupon.usage_limit = Number(usage_limit) ?? coupon.usage_limit;
-        coupon.used_count = Number(used_count) ?? coupon.used_count;
         coupon.min_purchase = min_purchase ?? coupon.min_purchase;
 
         await coupon.save();
