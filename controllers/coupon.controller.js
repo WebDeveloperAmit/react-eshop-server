@@ -111,12 +111,11 @@ export const updateCoupon = async (req, res) => {
 export const deleteCoupon = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedCoupon = await Coupon.findByIdAndDelete(id);
-        if (!deletedCoupon) {
-            return res.status(404).json({ 
-                message: "Coupon not found" 
-            });
+        const coupon = await Coupon.findById(id);
+        if (!coupon) {
+            return res.status(404).json({ message: "Coupon not found" });
         }
+        await Coupon.findByIdAndDelete(id);
         return res.status(200).json({ 
             message: "Coupon deleted successfully", 
             status: "success" 
