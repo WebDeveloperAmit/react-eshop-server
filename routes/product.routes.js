@@ -1,5 +1,5 @@
 import express from "express"; // Import the Express library
-import { createProduct, getAllProduct } from "../controllers/product.controller.js";
+import { createProduct, deleteProduct, editProduct, getAllProduct, updateProduct } from "../controllers/product.controller.js";
 import { isAdmin } from "../middlewares/admin.middleware.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { createUploadMiddleware } from "../middlewares/upload.middleware.js";
@@ -9,6 +9,7 @@ const router = express.Router(); // Create a new router object / Instance of the
 const uploadProductImage = createUploadMiddleware("products");
 
 router.get("/products", protect, isAdmin, getAllProduct);
+
 router.post(
     "/create-product", 
     protect, 
@@ -19,5 +20,12 @@ router.post(
     ]), 
     createProduct
 );
+
+router.get("/product/edit/:id", protect, isAdmin, editProduct);
+
+router.put("/product/update/:id", protect, isAdmin, updateProduct);
+
+router.delete("/product/delete/:id", protect, isAdmin, deleteProduct);
+
 
 export default router;

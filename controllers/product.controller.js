@@ -61,3 +61,49 @@ export const createProduct = async (req, res) => {
         return res.status(500).json({ message: "Server error", status: "error" });
     }
 }
+
+export const editProduct = async (req, res) => {
+    try {
+        const { proId } = req.params;
+        const product = await Product.findById(proId);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        return res.status(200).json({
+            message: "Product fetched successfully",
+            status: "success",
+            data: product
+        });
+    } catch (error) {
+        console.error("Product fetch error:", error.message);
+        return res.status(500).json({
+            message: error.message,
+            status: "error"
+        });
+    }
+}
+
+export const updateProduct = async (req, res) => {
+    try {
+        
+    } catch (error) {
+        console.error("Product update error:", error.message);
+        return res.status(500).json({
+            message: error.message,
+            status: "error"
+        });
+    }
+}
+
+export const deleteProduct = async (req, res) => {
+    try {
+        
+    } catch (error) {
+        console.error("Product delete error:", error.message);
+        return res.status(500).json({
+            message: error.message,
+            status: "error"
+        });
+    }
+}
+
