@@ -1,5 +1,5 @@
 import express from "express"; // Import the Express library
-import { createCategory, deleteCategory, getAllCategories, getCategory } from "../controllers/category.controller.js";
+import { createCategory, deleteCategory, getAllCategories, getCategory, updateCategory } from "../controllers/category.controller.js";
 import { isAdmin } from "../middlewares/admin.middleware.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { createUploadMiddleware } from "../middlewares/upload.middleware.js";
@@ -13,6 +13,8 @@ router.get("/categories", protect, isAdmin, getAllCategories); // verifies token
 router.post("/create-category", protect, isAdmin, uploadCategoryImage.single('category_image'), createCategory);
 
 router.get("/category/:id", protect, isAdmin, getCategory);
+
+router.put("/category/update/:id", protect, isAdmin, uploadCategoryImage.single('category_image'), updateCategory);
 
 router.delete("/category-delete/:id", protect, isAdmin, deleteCategory);
 
