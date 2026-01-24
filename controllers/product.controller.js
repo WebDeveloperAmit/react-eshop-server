@@ -117,6 +117,7 @@ export const updateProduct = async (req, res) => {
             cat_id, 
             brand_id, 
             product_name, 
+            product_slug,
             short_desc, 
             long_desc, 
             regular_price, 
@@ -124,11 +125,13 @@ export const updateProduct = async (req, res) => {
             sku, 
             qty, 
             stock_status, 
-            is_featured,
-            thumbnail_image
+            is_featured
         } = req.body;
 
-        
+        const product = await Product.findById(proId);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
 
         if (!cat_id) {
             return res.status(400).json({ message: "Category id is required" });
@@ -162,10 +165,64 @@ export const updateProduct = async (req, res) => {
             return res.status(400).json({ message: "Quantity is required" });
         }
 
-        if (!thumbnail_image) {
-            return res.status(400).json({ message: "Thumbnail image is required" });
+        let thumbnail_image_url = product.thumbnail_image_url;
+
+        if (req.files?.thumbnail_image?.length > 0) {
+        // delete old thumbnail
+        if (thumbnail_image_url) {
+            const oldThumbPath = path.join(process.cwd(), "public", thumbnail_image_url);
+            if (fs.existsSync(oldThumbPath)) {
+                fs.unlinkSync(oldThumbPath);
+            }
         }
-        
+
+            thumbnail_image_url = `/uploads/products/${req.files.thumbnail_image[0].filename}`;
+        }
+
+        if (req.files?.galleryImages?.length > 0) {
+
+            const oldGalleries = await ProductGalleries.find({ product_id: proId });
+
+            // delete old gallery files
+            for (const gallery of oldGalleries) {
+                const galleryPath = path.join(process.cwd(), "public", gallery.image_url);
+                if (fs.existsSync(galleryPath)) {
+                    fs.unlinkSync(galleryPath);
+                }
+            }
+
+            // delete old gallery records
+            await ProductGalleries.deleteMany({ product_id: proId });
+
+            // insert new gallery records
+            const newGalleries = req.files.galleryImages.map(file => ({
+                product_id: product._id,
+                image_url: `/uploads/products/${file.filename}`
+            }));
+
+            await ProductGalleries.insertMany(newGalleries);
+        }
+
+        product.cat_id = cat_id ?? product.cat_id;
+        product.brand_id = brand_id ?? product.brand_id;
+        product.product_name = product_name ?? product.product_name;
+        product.product_slug = product_slug ?? product.product_slug;
+        product.short_desc = short_desc ?? product.short_desc;
+        product.long_desc = long_desc ?? product.long_desc;
+        product.regular_price = regular_price ?? product.regular_price;
+        product.sale_price = sale_price ?? product.sale_price;
+        product.sku = sku ?? product.sku;
+        product.qty = qty ?? product.qty;
+        product.stock_status = stock_status ?? product.stock_status;
+        product.is_featured = is_featured ?? product.is_featured;
+        product.thumbnail_image_url = thumbnail_image_url ?? product.thumbnail_image_url;
+        await product.save();
+
+        return res.status(200).json({
+            message: "Product updated successfully",
+            status: "success",
+            data: product
+        });
     } catch (error) {
         console.error("Product update error:", error.message);
         return res.status(500).json({
