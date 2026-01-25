@@ -15,6 +15,6 @@ router.get("/brand/:id",  protect, isAdmin, getBrand);
 
 router.put("/brand/update/:id",  protect, isAdmin, updateBrand);
 
-router.delete("/brand-delete/:id", protect, isAdmin, deleteBrand);
+router.delete("/brand/delete/:id", protect, isAdmin, deleteBrand);
 
 export default router;
