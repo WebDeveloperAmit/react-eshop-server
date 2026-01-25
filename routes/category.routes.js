@@ -10,12 +10,12 @@ const uploadCategoryImage = createUploadMiddleware("categories");
 
 router.get("/categories", protect, isAdmin, getAllCategories); // verifies token, attaches req.user / checks role === "admin"
 
-router.post("/create-category", protect, isAdmin, uploadCategoryImage.single('category_image'), createCategory);
+router.post("/category/create", protect, isAdmin, uploadCategoryImage.single('category_image'), createCategory);
 
 router.get("/category/:id", protect, isAdmin, getCategory);
 
 router.put("/category/update/:id", protect, isAdmin, uploadCategoryImage.single('category_image'), updateCategory);
 
-router.delete("/category-delete/:id", protect, isAdmin, deleteCategory);
+router.delete("/category/delete/:id", protect, isAdmin, deleteCategory);
 
 export default router;
