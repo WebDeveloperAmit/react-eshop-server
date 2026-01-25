@@ -2,11 +2,34 @@ import Coupon from "../models/coupon.model.js";
 
 export const getAllCoupons = async (req, res) => {
     try {
-        const coupons = await Coupon.find().sort({ createdAt: 'desc' });
-        return res.status(200).json({ message: "Fetching all coupons", status: "success", coupon: coupons });
+        const { search } = req.query;
+
+        let query = {};
+
+        if (search) {
+            query = {
+                $or: [
+                    { code: { $regex: search, $options: "i" } },
+                    { type: { $regex: search, $options: "i" } }
+                ]
+            };
+        }
+
+        const coupons = await Coupon
+        .find(query)
+        .sort({ createdAt: 'desc' });
+
+        return res.status(200).json({ 
+            message: "Fetching all coupons", 
+            status: "success", 
+            coupon: coupons 
+        });
     } catch (error) {
         console.error("Error fetching coupons:", error);
-        return res.status(500).json({ message: "Server error", status: "error" });
+        return res.status(500).json({ 
+            message: "Server error", 
+            status: "error" 
+        });
     }
 }
   
