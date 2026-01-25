@@ -9,7 +9,7 @@ const uploadBrandImage = createUploadMiddleware("brands");
 
 router.get("/brands", protect, isAdmin, getAllBrands);
 
-router.post("/create-brand", protect, isAdmin, uploadBrandImage.single('brand_image'), createBrand);
+router.post("/brand/create", protect, isAdmin, uploadBrandImage.single('brand_image'), createBrand);
 
 router.get("/brand/:id",  protect, isAdmin, getBrand);
 

@@ -11,7 +11,7 @@ const uploadProductImage = createUploadMiddleware("products");
 router.get("/products", protect, isAdmin, getAllProduct);
 
 router.post(
-    "/create-product", 
+    "/product/create", 
     protect, 
     isAdmin, 
     uploadProductImage.fields([
