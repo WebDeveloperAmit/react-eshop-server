@@ -146,7 +146,7 @@ export const deleteCategory = async (req, res) => {
         }
         if (category.category_image_url) {
             const imagePath = path.join(
-                process.cwd,
+                process.cwd(),
                 'public',
                 category.category_image_url
             );
@@ -157,7 +157,7 @@ export const deleteCategory = async (req, res) => {
             }
             
         } else {
-            console.warn("Image file does not exist:", imagePath);
+            console.warn("No category image found");
         }
         await Category.findByIdAndDelete(id);
         return res.status(200).json({ 
