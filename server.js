@@ -25,15 +25,20 @@ app.use(cors({
 }));
 
 dotenv.config(); // Load environment variables from a .env file into process.env
+
 connectDB(); // Connect to the MongoDB database
 
 const __filename = fileURLToPath(import.meta.url); // Get the current file path
+
 const __dirname = path.dirname(__filename); // Get the directory name of the current module
 
 // Middleware
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads"))); // Serve static files from the 'public' directory
+
 app.use(express.json()); // Middleware to parse JSON bodies, Parses incoming JSON data
+
 app.use(express.urlencoded({ extended: true })); // for form-data / x-www-form-urlencoded
+
 app.use(errorHandler); // Custom error handling middleware
 
 // Mount routers

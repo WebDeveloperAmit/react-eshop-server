@@ -2,18 +2,37 @@ import fs from 'fs';
 import path from 'path';
 import Category from "../models/category.model.js";
 
-// Controller to get all categories
+// All categories
 export const getAllCategories = async (req, res) => {
     try {
-        const categories = await Category.find().sort({ createdAt: 'desc'});
-        return res.status(200).json({ message: "Fetching all categories", status: "success", data: categories });
+        const { search } = req.query;
+        let query = {};
+        if (search) {
+            query = {
+                $or: [
+                    { category_name: { $regex: search, $options: "i" } }
+                ]
+            };
+        }
+        const categories = await Category
+        .find(query)
+        .sort({ createdAt: 'desc'});
+
+        return res.status(200).json({ 
+            message: "Fetching all categories", 
+            status: "success", 
+            data: categories 
+        });
     } catch (error) {
         console.error("Error fetching categories:", error);
-        return res.status(500).json({ message: "Server error", status: "error" });
+        return res.status(500).json({ 
+            message: "Server error", 
+            status: "error" 
+        });
     }
 }
 
-// Controller to create a new category
+// Create new category
 export const createCategory = async (req, res) => {
     try {
         const { category_name } = req.body;
@@ -40,10 +59,11 @@ export const createCategory = async (req, res) => {
     }
 }
 
+// Get single category
 export const getCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const category = Category.findById(id);
+        const category = await Category.findById(id);
         if (!category) {
             return res.status(404).json({ message: "Category not found" });
         }
@@ -58,6 +78,7 @@ export const getCategory = async (req, res) => {
     }
 }
 
+// Update category
 export const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
@@ -113,6 +134,7 @@ export const updateCategory = async (req, res) => {
     }
 }
 
+// Delete category
 export const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params; 
