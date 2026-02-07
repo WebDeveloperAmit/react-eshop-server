@@ -4,11 +4,34 @@ import Brand from '../models/brand.model.js';
 
 export const getAllBrands = async (req, res) => {
     try {
-        const brands = await Brand.find().sort({createdAt: "desc"});
-        return res.status(200).json({message: "Fetching all brands", status: "success", brand: brands});
+        const { search } = req.query; // Extract search query parameter from the request
+        let query = {}; // Initialize an empty query object
+
+        if (search) {
+            query = { // If a search query is provided, construct a query to search for brands by name or slug
+                $or: [
+                    { brand_name: { $regex: search, $options: "i" } }, // Case-insensitive search for brand name
+                    { brand_slug: { $regex: search, $options: "i" } }
+                ]
+            };
+        }
+
+        const brands = await Brand
+                    .find(query)
+                    .sort({ createdAt: "desc" });
+
+        return res.status(200).json({
+            message: "Fetching all brands", 
+            status: "success", 
+            brand: brands
+        });
+
     } catch (error) {
         console.error("Error fetching models", error);
-        return res.status(500).json({message: "Server Error", status: "error"});
+        return res.status(500).json({
+            message: "Server Error", 
+            status: "error"
+        });
     }
 }
 
