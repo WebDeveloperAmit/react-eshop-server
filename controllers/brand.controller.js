@@ -88,14 +88,21 @@ export const updateBrand = async (req, res) => {
 
         const brand = await Brand.findById(id);
         if (!brand) {
-            return res.status(404).json({ message: "Brand not found" });
+            return res.status(404).json({ 
+                message: "Brand not found", 
+                status: "error" 
+            });
         }
 
         if (!brand_name || brand_name.trim() === '') {
-            return res.status(400).json({ message: "Brand name is required" });
+            return res.status(400).json({ 
+                message: "Brand name is required", 
+                status: "error" 
+            });
         }
 
         let brand_image_url = brand.brand_image_url;
+        
         if (req.file) {
 
             if (brand.brand_image_url) {
