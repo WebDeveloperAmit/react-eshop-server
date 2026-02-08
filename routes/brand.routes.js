@@ -13,7 +13,7 @@ router.post("/brand/create", protect, isAdmin, uploadBrandImage.single('brand_im
 
 router.get("/brand/:id",  protect, isAdmin, getBrand);
 
-router.put("/brand/update/:id",  protect, isAdmin, updateBrand);
+router.put("/brand/update/:id",  protect, isAdmin, uploadBrandImage.single('brand_image'), updateBrand);
 
 router.delete("/brand/delete/:id", protect, isAdmin, deleteBrand);
 
