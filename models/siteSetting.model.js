@@ -2,44 +2,32 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const SiteSettingSchema = new Schema({
-    contact_heading: {
+    site_name: {
         type: String,
-        required: [true, 'Contact heading is required'],
         trim: true
     },
-    contact_sub_heading: {
+    site_logo_url: {
         type: String,
-        required: [true, 'Contact sub heading is required'],
+        required: [true, 'Site logo is required'],
+    },
+    site_info: {
+        type: String,
         trim: true
     },
-    address: {
+    site_mobile_no: {
         type: String,
-        required: [true, 'Address is required'],
-        trim: true
-    },
-    address_2: {
-        type: String,
+        required: [true, 'Site mobile number is required'],
         trim: true,
-        default: null
     },
-    phone: {
+    site_email: {
         type: String,
-        required: [true, 'Phone number is required'],
+        required: [true, 'Site email is required'],
         trim: true
     },
-    phone_2: {
+    site_address: {
         type: String,
+        required: [true, 'Site address is required'],
         trim: true
-    },
-    email: {
-        type: String,
-        required: [true, 'Email is required'],  
-        trim: true
-    },
-    email_2: {
-        type: String,
-        trim: true,
-        default: null
     },
     facebook_url: {
         type: String,
@@ -66,12 +54,28 @@ const SiteSettingSchema = new Schema({
         trim: true,
         default: null
     },
-    footer_text: {
+    contact_page_heading: {
         type: String,
-        default: null,
+        required: [true, 'Contact page heading is required'],
         trim: true
     },
-
+    get_in_touch_content: {
+        type: String,
+        required: [true, 'Get in touch content is required'],
+        trim: true
+    },
+    home_page_section_name: {
+        type: String,
+        required: [true, 'Home page section name is required'],
+        trim: true
+    },
+    home_page_section_content: {
+        type: String,
+        required: [true, 'Home page section content is required'],
+        trim: true
+    },
+}, { 
+    timestamps: true 
 });
 
 export default mongoose.model('SiteSetting', SiteSettingSchema);
