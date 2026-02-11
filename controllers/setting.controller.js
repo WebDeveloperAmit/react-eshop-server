@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import SiteSetting from "../models/siteSetting.model.js";
 
 export const createOrUpdateSiteInfo = async (req, res) => {
@@ -19,11 +21,7 @@ export const createOrUpdateSiteInfo = async (req, res) => {
             home_page_section_content
         } = req.body || {};
 
-        const site_logo_url = req.file 
-        ? `uploads/site-settings/${req.file.filename}` 
-        : undefined; // Handle the case when no file is uploaded
-
-        if (!site_name || !site_info | !site_mobile_no || !site_email || !site_address || !contact_page_heading || !get_in_touch_content || !home_page_section_name || !home_page_section_content) {
+        if (!site_name || !site_info || !site_mobile_no || !site_email || !site_address || !contact_page_heading || !get_in_touch_content || !home_page_section_name || !home_page_section_content) {
 
             return res.status(400).json({ 
                 message: "All fields are required", 
@@ -31,9 +29,13 @@ export const createOrUpdateSiteInfo = async (req, res) => {
             });
         }
 
+        let site_logo_url = null;
+        if (req.file) {
+            site_logo_url = `uploads/site-settings/${req.file.filename}`;
+        }
+
         const existingSiteInfo = await SiteSetting.findOne();
         if (existingSiteInfo) {
-
             existingSiteInfo.site_name = site_name;
             existingSiteInfo.site_info = site_info;
             existingSiteInfo.site_mobile_no = site_mobile_no;
@@ -49,9 +51,25 @@ export const createOrUpdateSiteInfo = async (req, res) => {
             existingSiteInfo.home_page_section_name = home_page_section_name;
             existingSiteInfo.home_page_section_content = home_page_section_content;
 
-            if (site_logo_url) {
-                existingSiteInfo.site_logo_url = site_logo_url;
+            site_logo_url = existingSiteInfo.site_logo_url;
+
+            if (req.file) {
+
+                if (existingSiteInfo.site_logo_url) {
+                    let oldImagePath = path.join(
+                        process.cwd(),
+                        'public',
+                        existingSiteInfo.site_logo_url
+                    );
+                    
+                    if (fs.existsSync(oldImagePath)) {
+                        fs.unlinkSync(oldImagePath);
+                    }
+                }
+                site_logo_url = `uploads/site-settings/${req.file.filename}`;
             }
+
+            existingSiteInfo.site_logo_url = site_logo_url;
 
             await existingSiteInfo.save();
 
@@ -97,7 +115,6 @@ export const createOrUpdateSiteInfo = async (req, res) => {
         });
     }
 }
-
 
 export const getSiteSettings = async (req, res) => {
     try {
