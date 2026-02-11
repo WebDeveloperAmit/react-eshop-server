@@ -1,15 +1,5 @@
 import SiteSetting from "../models/siteSetting.model.js";
 
-// export const getAllSiteInfo = async (req, res) => {
-//     try {
-//         const siteInfo = new SiteSetting.find();
-//         return res.status(200).json({ message: "Successfully fetching site infos", status: "success", site_info: siteInfo });
-//     } catch (error) {
-//         console.error("Error fetching site info:", error);
-//         return res.status(500).json({ message: "Server Error", status: "error" });
-//     }
-// }
-
 export const createOrUpdateSiteInfo = async (req, res) => {
     try {
         const { 
@@ -101,6 +91,24 @@ export const createOrUpdateSiteInfo = async (req, res) => {
 
     } catch (error) {
         console.error("Error creating/updating site info:", error);
+        return res.status(500).json({ 
+            message: "Server Error", 
+            status: "error" 
+        });
+    }
+}
+
+
+export const getSiteSettings = async (req, res) => {
+    try {
+        const siteInfo = await SiteSetting.find();
+        return res.status(200).json({ 
+            message: "Site settings fetched successfully", 
+            status: "success", 
+            data: siteInfo 
+        });
+    } catch (error) {
+        console.error("Error fetching site settings:", error);
         return res.status(500).json({ 
             message: "Server Error", 
             status: "error" 
