@@ -4,8 +4,21 @@ import ProductGalleries from '../models/productGalleries.model.js';
 
 export const getAllProduct = async (req, res) => {
     try {
-        const products = await Product.find().sort({ createdAt: 'desc'});
-        // console.log(products);
+        const { searchTerm } = req.query;
+        let query = {};
+
+        if (searchTerm) {
+            query = {
+                $or: [
+                   { product_name: { $regex: searchTerm, $options: "i" } }
+                ]
+            };
+        }
+
+        const products = await Product
+                .find(query)
+                .sort({ createdAt: 'desc'});
+
         return res.status(200).json({
             message: "Product fetched successfully",
             status: "success",
