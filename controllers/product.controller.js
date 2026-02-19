@@ -1,4 +1,6 @@
 import path from 'path';
+import brandModel from '../models/brand.model.js';
+import categoryModel from '../models/category.model.js';
 import Product from '../models/product.model.js';
 import ProductGalleries from '../models/productGalleries.model.js';
 
@@ -19,10 +21,40 @@ export const getAllProduct = async (req, res) => {
                 .find(query)
                 .sort({ createdAt: 'desc'});
 
+        const categories = await categoryModel.find({});
+        const brands = await brandModel.find({});
+        const productIds = products.map(p => p._id);
+        const galleries = await ProductGalleries.find({
+            product_id: { $in: productIds }
+        });
+
+        const finalProducts = products.map(product => {
+
+            const productCategory = categories.find(
+                c => c._id.toString() === product.category_id?.toString()
+            );
+
+            const productBrand = brands.find(
+                b => b._id.toString() === product.brand_id?.toString()
+            );
+
+            const productGalleries = galleries.filter(
+                g => g.product_id.toString() === product._id.toString()
+            );
+
+            return {
+                ...product.toObject(),
+                category_name: productCategory?.category_name || null,
+                brand_name: productBrand?.brand_name || null,
+                galleries: productGalleries
+            };
+
+        });
+
         return res.status(200).json({
             message: "Product fetched successfully",
             status: "success",
-            data: products
+            data: finalProducts
         });
     } catch (error) {
         console.error("Error fetching products:", error.message);
@@ -104,15 +136,19 @@ export const createProduct = async (req, res) => {
 
 export const editProduct = async (req, res) => {
     try {
-        const { proId } = req.params;
-        const product = await Product.findById(proId);
+        const { id } = req.params;
+        const product = await Product.findById(id);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
+
+        const galleries = await ProductGalleries.find({ product_id: id });
+
         return res.status(200).json({
             message: "Product fetched successfully",
             status: "success",
-            data: product
+            data: product,
+            gallery_images: galleries
         });
     } catch (error) {
         console.error("Product fetch error:", error.message);
@@ -125,7 +161,7 @@ export const editProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-        const { proId } = req.params;
+        const { id } = req.params;
         const { 
             cat_id, 
             brand_id, 
@@ -141,7 +177,7 @@ export const updateProduct = async (req, res) => {
             is_featured
         } = req.body;
 
-        const product = await Product.findById(proId);
+        const product = await Product.findById(id);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
@@ -194,7 +230,7 @@ export const updateProduct = async (req, res) => {
 
         if (req.files?.galleryImages?.length > 0) {
 
-            const oldGalleries = await ProductGalleries.find({ product_id: proId });
+            const oldGalleries = await ProductGalleries.find({ product_id: id });
 
             // delete old gallery files
             for (const gallery of oldGalleries) {
@@ -205,7 +241,7 @@ export const updateProduct = async (req, res) => {
             }
 
             // delete old gallery records
-            await ProductGalleries.deleteMany({ product_id: proId });
+            await ProductGalleries.deleteMany({ product_id: id });
 
             // insert new gallery records
             const newGalleries = req.files.galleryImages.map(file => ({
@@ -247,9 +283,9 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
     try {
-        const { proId } = req.params;
+        const { id } = req.params;
 
-        const product = await Product.findById(proId);
+        const product = await Product.findById(id);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
@@ -267,7 +303,7 @@ export const deleteProduct = async (req, res) => {
         }
 
         /* ------------------ Delete gallery images ------------------ */
-        const galleries = await ProductGalleries.find({ product_id: proId });
+        const galleries = await ProductGalleries.find({ product_id: id });
 
         for (const gallery of galleries) {
             if (gallery.image_url) {
@@ -284,9 +320,9 @@ export const deleteProduct = async (req, res) => {
         }
 
         /* ------------------ Delete gallery records ------------------ */
-        await ProductGalleries.deleteMany({ product_id: proId });
+        await ProductGalleries.deleteMany({ product_id: id });
 
-        await Product.findByIdAndDelete(proId);
+        await Product.findByIdAndDelete(id);
 
         return res.status(200).json({
             message: "Product deleted successfully",
