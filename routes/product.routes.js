@@ -23,7 +23,16 @@ router.post(
 
 router.get("/product/edit/:id", protect, isAdmin, editProduct);
 
-router.put("/product/update/:id", protect, isAdmin, updateProduct);
+router.put(
+    "/product/update/:id", 
+    protect, 
+    isAdmin, 
+    uploadProductImage.fields([
+        { name: 'thumbnail_image', maxCount: 1 }, // single thumbnail image
+        { name: 'galleryImages', maxCount: 10 } // up to 10 gallery images
+    ]), 
+    updateProduct
+);
 
 router.delete("/product/delete/:id", protect, isAdmin, deleteProduct);
 

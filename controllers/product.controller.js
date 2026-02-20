@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import brandModel from '../models/brand.model.js';
 import categoryModel from '../models/category.model.js';
@@ -217,13 +218,18 @@ export const updateProduct = async (req, res) => {
         let thumbnail_image_url = product.thumbnail_image_url;
 
         if (req.files?.thumbnail_image?.length > 0) {
-        // delete old thumbnail
-        if (thumbnail_image_url) {
-            const oldThumbPath = path.join(process.cwd(), "public", thumbnail_image_url);
-            if (fs.existsSync(oldThumbPath)) {
-                fs.unlinkSync(oldThumbPath);
+            // delete old thumbnail
+            if (thumbnail_image_url) {
+                const oldThumbPath = path.join(
+                    process.cwd(), 
+                    "public", 
+                    thumbnail_image_url
+                );
+
+                if (fs.existsSync(oldThumbPath)) {
+                    fs.unlinkSync(oldThumbPath);
+                }
             }
-        }
 
             thumbnail_image_url = `/uploads/products/${req.files.thumbnail_image[0].filename}`;
         }
@@ -234,7 +240,12 @@ export const updateProduct = async (req, res) => {
 
             // delete old gallery files
             for (const gallery of oldGalleries) {
-                const galleryPath = path.join(process.cwd(), "public", gallery.image_url);
+                const galleryPath = path.join(
+                    process.cwd(), 
+                    "public", 
+                    gallery.image_url
+                );
+
                 if (fs.existsSync(galleryPath)) {
                     fs.unlinkSync(galleryPath);
                 }
@@ -265,6 +276,7 @@ export const updateProduct = async (req, res) => {
         product.stock_status = stock_status ?? product.stock_status;
         product.is_featured = is_featured ?? product.is_featured;
         product.thumbnail_image_url = thumbnail_image_url ?? product.thumbnail_image_url;
+
         await product.save();
 
         return res.status(200).json({
