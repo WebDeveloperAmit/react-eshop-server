@@ -13,6 +13,7 @@ import brandRoutes from "./routes/brand.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import productRoutes from "./routes/product.routes.js";
+import queryRoutes from "./routes/query.routes.js";
 import siteSettingRoutes from "./routes/siteSetting.routes.js";
 import sliderRoutes from "./routes/slider.routes.js";
 
@@ -36,7 +37,6 @@ const __dirname = path.dirname(__filename); // Get the directory name of the cur
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads"))); // Serve static files from the 'public' directory
 
 app.use(express.json()); // Middleware to parse JSON bodies, Parses incoming JSON data
-
 app.use(express.urlencoded({ extended: true })); // for form-data / x-www-form-urlencoded
 
 app.use(errorHandler); // Custom error handling middleware
@@ -49,6 +49,7 @@ app.use("/v1/api", couponRoutes);
 app.use("/v1/api", authRoutes);
 app.use("/v1/api", sliderRoutes);
 app.use("/v1/api", siteSettingRoutes);
+app.use("/v1/api", queryRoutes);
 
 app.get("/", (req, res) => {
     res.send("API is running");

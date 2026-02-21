@@ -32,7 +32,7 @@ export const getAllCoupons = async (req, res) => {
         });
     }
 }
-  
+
 export const createCoupon = async (req, res) => {
     try {
         // Logic to create a new coupon

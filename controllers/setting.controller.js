@@ -4,7 +4,7 @@ import SiteSetting from "../models/siteSetting.model.js";
 
 export const createOrUpdateSiteInfo = async (req, res) => {
     try {
-        const { 
+        const {
             site_name, 
             site_info, 
             site_mobile_no,
