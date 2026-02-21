@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import NewsletterModel from "../models/newsletter.model.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const getAllSubscribeNewsletter = async (req, res) => {
     try {
@@ -61,13 +63,42 @@ export const subscribeNewsletter = async (req, res) => {
             });
         }
 
+        const existing = await NewsletterModel.findOne({ email });
+
+        if (existing) {
+            return res.status(400).json({
+                message: "Email already subscribed",
+                status: "error"
+            });
+        }
+
         const response = await NewsletterModel.create({
             name: name.trim(),
             email: email.trim()
         });
 
+        const htmlTemplate = `
+        <div style="font-family: Arial; padding:20px;">
+            <h2>Welcome to Our Store, ${name} 🎉</h2>
+            <p>Thank you for subscribing to our newsletter.</p>
+            <p>You will now receive:</p>
+            <ul>
+            <li>Exclusive discounts</li>
+            <li>New product updates</li>
+            <li>Special offers</li>
+            </ul>
+            <br/>
+            <a href="https://yourwebsite.com" 
+            style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;">
+            Visit Our Store
+            </a>
+        </div>
+        `;
+
+        await sendEmail(email, "Welcome to Our Store 🎉", htmlTemplate);
+
         return res.status(201).json({ 
-            message: "Successfully inserted", 
+            message: "Successfully subscribed. Check your email!", 
             status: "success",
             data: response
         });
@@ -85,7 +116,7 @@ export const deleteSubscribeNewsletter = async (req, res) => {
     try {
         const { id } = req.params;
 
-        if (!mongoose.Types.ObjectId.isvalid(id)) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 message: "Invalid ID",
                 status: "error"
