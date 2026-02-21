@@ -35,7 +35,7 @@ export const allSubCategories = async (req, res) => {
 
 export const createSubCategory = async (req, res) => {
     try {
-        const { sub_category_name } = req.body;
+        const { sub_category_name, category_id } = req.body;
         const sub_category_image = req.file;
 
         if (!sub_category_name || !sub_category_name.trim()) {
@@ -53,6 +53,7 @@ export const createSubCategory = async (req, res) => {
         const imageUrl = `uploads/sub-categories/${sub_category_image.filename}`;
 
         const newSubCategory = new SubCategoryModel({
+            category_id,
             sub_category_name,
             sub_category_image: imageUrl
         });
@@ -124,6 +125,7 @@ export const updateSubCategory = async (req, res) => {
         }
 
         const { 
+            category_id,
             sub_category_name, 
             // sub_category_slug
         } = req.body;
@@ -136,7 +138,7 @@ export const updateSubCategory = async (req, res) => {
             });
         }
 
-        if (!sub_category_name || sub_category_name.trim() === '') {
+        if (!sub_category_name || !sub_category_name.trim()) {
             return res.status(400).json({ 
                 message: "Sub category name is required",
                 status: "error"
@@ -162,6 +164,7 @@ export const updateSubCategory = async (req, res) => {
             sub_category_image_url = `uploads/sub-categories/${req.file.filename}`;
         }
 
+        subcategory.category_id = category_id ?? subcategory.category_id;
         subcategory.sub_category_name = sub_category_name ?? subcategory.sub_category_name;
         // subcategory.sub_category_slug = sub_category_slug ?? subcategory.sub_category_slug;
         subcategory.sub_category_image_url = sub_category_image_url ?? subcategory.sub_category_image_url;
