@@ -88,7 +88,7 @@ export const subscribeNewsletter = async (req, res) => {
             <li>Special offers</li>
             </ul>
             <br/>
-            <a href="https://yourwebsite.com" 
+            <a href=${process.env.FRONTEND_URI} 
             style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;">
             Visit Our Store
             </a>
