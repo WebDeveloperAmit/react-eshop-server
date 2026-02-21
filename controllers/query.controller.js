@@ -3,7 +3,19 @@ import contactModel from "../models/contact.model.js";
 
 export const getAllContacts = async (req, res) => {
     try {
-        const response = await contactModel.find().sort({ createdAt: -1 });
+        const { search } = req.query;
+        let query = {};
+        if (search) {
+            query = {
+                $or: [
+                    { full_name: { $regex: search, $options: "i" } },
+                    { email: { $regex: search, $options: "i" } }
+                ]
+            }
+        }
+        const response = await contactModel
+                            .find(query)
+                            .sort({ createdAt: -1 });
         if (response.length === 0) {
             return res.status(404).json({
                 message: "No contact found",

@@ -12,6 +12,7 @@ import authRoutes from "./routes/auth/auth.routes.js";
 import brandRoutes from "./routes/brand.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
+import newsletterRoutes from "./routes/newsletter.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import queryRoutes from "./routes/query.routes.js";
 import siteSettingRoutes from "./routes/siteSetting.routes.js";
@@ -50,6 +51,7 @@ app.use("/v1/api", authRoutes);
 app.use("/v1/api", sliderRoutes);
 app.use("/v1/api", siteSettingRoutes);
 app.use("/v1/api", queryRoutes);
+app.use("/v1/api", newsletterRoutes);
 
 app.get("/", (req, res) => {
     res.send("API is running");
