@@ -1,24 +1,65 @@
 import fs from 'fs';
+import mongoose from 'mongoose';
 import path from 'path';
 import Slider from "../models/slider.model.js";
 
 export const getAllSliders = async (req, res) => {
     try {
-        const sliders = await Slider.find().sort({ createdAt: "desc" });
-        return res.status(200).json({ message: "Fetching all sliders", status: "success", slider: sliders });
+
+        const { search } = req.query;
+        let query = {};
+        if (search)
+        {
+            query = {
+                $or: [
+                    { slider_title: { $regex: search, $options: "i" } },
+                    { slider_heading: { $regex: search, $options: "i" } }
+                ]
+            }
+        }
+
+        const sliders = await Slider
+                        .find(query)
+                        .sort({ 
+                            createdAt: "desc" 
+                        });
+        
+        return res.status(200).json({ 
+            message: "Successfully fetched sliders", 
+            status: "success", 
+            data: sliders 
+        });
     } catch (error) {
         console.error("Error fetching sliders:", error);
-        return res.status(500).json({ message: "Server Error", status: "error" });
+        return res.status(500).json({ 
+            message: "Server Error", 
+            status: "error" 
+        });
     }
 }
 
 export const createSlider = async (req, res) => {
     try {
-        const { cat_slug, slider_title, slider_heading, slider_sub_heading } = req.body;
+        const { 
+            cat_slug, 
+            slider_title, 
+            slider_heading, 
+            slider_sub_heading 
+        } = req.body;
+
         const slider_image_url = req.file ? `uploads/sliders/${req.file.filename}` : null;
-        if (!slider_title || !slider_heading || !slider_sub_heading) {
-            return res.status(400).json({ message: "All fields are required" });
+
+        if (
+            (slider_title !== undefined && !slider_title.trim()) ||
+            (slider_heading !== undefined && !slider_heading.trim()) ||
+            (slider_sub_heading !== undefined && !slider_sub_heading.trim())
+        ) {
+            return res.status(400).json({ 
+                message: "All fields are required",
+                status: "error"
+            });
         }
+
         const newSlider = new Slider({
             cat_slug,
             slider_title,
@@ -27,34 +68,66 @@ export const createSlider = async (req, res) => {
             slider_image_url
         });
         await newSlider.save();
-        return res.status(200).json({ message: "Slider created successfully", status: "success", slider: newSlider });
+
+        return res.status(200).json({ 
+            message: "Slider created successfully", 
+            status: "success", 
+            slider: newSlider 
+        });
     } catch (error) {
-        console.error("Error create sliders:", error);
-        return res.status(500).json({ message: "Server Error", status: "error" });
+        console.error("Error creating sliders:", error);
+        return res.status(500).json({ 
+            message: "Server Error", 
+            status: "error" 
+        });
     }
 }
 
 export const getSlider = async (req, res) => {
     try {
         const { id } = req.params;
-        const slider = await Slider.findById(id);
-        if (!slider) {
-            return res.status(404).json({ message: "Slider not found" });
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid ID",
+                status: "error"
+            });
         }
+
+        const slider = await Slider.findById(id);
+
+        if (!slider) {
+            return res.status(404).json({ 
+                message: "Slider not found",
+                status: "error"
+            });
+        }
+
         return res.status(200).json({
             message: "Slider fetched successfully",
             status: "success",
             data: slider
         });
     } catch (error) {
-        console.error("Error slider fetching...:", error);
-        return res.status(500).json({ message: "Server Error", status: "error" });
+        console.error("Error fetching slider:", error);
+        return res.status(500).json({ 
+            message: "Server Error", 
+            status: "error" 
+        });
     }
 }
 
 export const updateSlider = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid ID",
+                status: "error"
+            });
+        }
+
         const { 
             cat_slug, 
             slider_title, 
@@ -63,12 +136,23 @@ export const updateSlider = async (req, res) => {
         } = req.body;
 
         const slider = await Slider.findById(id);
+
         if (!slider) {
-            return res.status(404).json({ message: "Slider not found" });
+            return res.status(404).json({ 
+                message: "Slider not found",
+                status: "error"
+            });
         }
 
-        if (!slider_title || !slider_heading || !slider_sub_heading) {
-            return res.status(400).json({ message: "All fields are required" });
+        if (
+            (slider_title !== undefined && !slider_title.trim()) ||
+            (slider_heading !== undefined && !slider_heading.trim()) ||
+            (slider_sub_heading !== undefined && !slider_sub_heading.trim())
+        ) {
+            return res.status(400).json({ 
+                message: "All fields are required",
+                status: "error"
+            });
         }
 
         let slider_image_url = slider.slider_image_url;
@@ -104,7 +188,7 @@ export const updateSlider = async (req, res) => {
             data: slider 
         });
     } catch (error) {
-        console.error("Error create sliders:", error);
+        console.error("Error updating slider:", error);
         return res.status(500).json({ 
             message: "Server Error", 
             status: "error" 
@@ -115,7 +199,16 @@ export const updateSlider = async (req, res) => {
 export const deleteSlider = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid ID",
+                status: "error"
+            });
+        }
+
         const slider = await Slider.findById(id);
+
         if (!slider) {
             return res.status(404).json({ 
                 message: "Slider not found", 
@@ -130,10 +223,9 @@ export const deleteSlider = async (req, res) => {
             );
             if (fs.existsSync(imagePath)) { // Check if file exists
                 fs.unlinkSync(imagePath); // Synchronously delete the file
-            } else {
-                console.warn("Slider image file does not exist:", imagePath);
             }
         }
+
         await Slider.findByIdAndDelete(id);
 
         return res.status(200).json({ 

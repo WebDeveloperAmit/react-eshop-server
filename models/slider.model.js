@@ -26,6 +26,8 @@ const SliderSchema = new Schema({
         type: String,
         required: [true, 'Slider image is required']
     }
+},{
+    timestamps: true
 });
 
 export default mongoose.model('Slider', SliderSchema);
