@@ -39,12 +39,9 @@ export const loginAdminUser  = async (req, res) => {
 
         //  Create JWT token
         const token = jwt.sign(
-            { 
-                id: user._id, 
-                role: user.role 
-            },
+            {id: user._id, role: user.role},
             process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN || '1d' }
+            {expiresIn: process.env.JWT_EXPIRES_IN || '1d'}
         );
 
         return res.status(200).json({ 
@@ -111,3 +108,126 @@ export const registerAdminUser  = async (req, res) => {
         });
     }
 }
+
+export const adminProfile = async (req, res) => {
+  try {
+
+    const user = await AdminUser
+                    .findById(req.user._id)
+                    .select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Admin not found",
+        status: "error"
+      });
+    }
+
+    return res.status(200).json({
+        message: "Successfully fetched admin detail",
+        status: "success",
+        user
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+      status: "error"
+    });
+  }
+};
+
+export const updateAdminProfile = async (req, res) => {
+    try {
+        const adminId = req.user._id; // from auth middleware
+
+        const { 
+            name, 
+            email, 
+            oldPassword, 
+            newPassword, 
+            confirmPassword 
+        } = req.body;
+
+        const admin = await AdminUser.findById(adminId);
+
+        if (!admin) {
+            return res.status(404).json({
+                message: "Admin not found",
+                status: "error"
+            });
+        }
+
+        // Update name
+        if (name) {
+            admin.name = name;
+        }
+
+        // Update email
+        if (email) {
+            const existingEmail = await AdminUser.findOne({
+                email: email.toLowerCase(),
+                _id: { $ne: adminId }
+            });
+
+            if (existingEmail) {
+                return res.status(400).json({
+                    message: "Email already in use",
+                    status: "error"
+                });
+            }
+
+            admin.email = email.toLowerCase();
+        }
+
+        // Update password (if provided)
+        if (oldPassword || newPassword || confirmPassword) {
+
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                return res.status(400).json({
+                    message: "All password fields are required",
+                    status: "error"
+                });
+            }
+
+            const isMatch = await bcrypt.compare(oldPassword, admin.password);
+
+            if (!isMatch) {
+                return res.status(401).json({
+                    message: "Old password is incorrect",
+                    status: "error"
+                });
+            }
+
+            if (newPassword !== confirmPassword) {
+                return res.status(400).json({
+                    message: "New passwords do not match",
+                    status: "error"
+                });
+            }
+
+            const salt = await bcrypt.genSalt(12);
+            admin.password = await bcrypt.hash(newPassword, salt);
+        }
+
+        await admin.save();
+
+        return res.status(200).json({
+            message: "Profile updated successfully",
+            status: "success",
+            user: {
+                _id: admin._id,
+                name: admin.name,
+                email: admin.email,
+                role: admin.role
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating admin profile:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+            status: "error"
+        });
+    }
+};
