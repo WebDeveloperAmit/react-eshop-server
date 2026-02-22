@@ -417,11 +417,11 @@ export const deleteProductGalleryImage = async (req, res) => {
             });
         }
 
-        const product_gallery = await ProductGalleries.find({ product_id: id });
+        const product_gallery = await ProductGalleries.findById(id);
 
         if (!product_gallery)
         {
-            return res.status(400).json({
+            return res.status(404).json({
                 message: "Product gallery image not found",
                 status: "error"
             });
@@ -440,7 +440,7 @@ export const deleteProductGalleryImage = async (req, res) => {
             }
         }
 
-        await ProductGalleries.findByIdAndDelete({ product_id: id });
+        await ProductGalleries.findByIdAndDelete(id);
 
         return res.status(200).json({
             message: "Successfully deleted gallery image",
