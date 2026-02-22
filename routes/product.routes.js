@@ -1,5 +1,5 @@
 import express from "express"; // Import the Express library
-import { createProduct, deleteProduct, editProduct, getAllProduct, updateProduct } from "../controllers/product.controller.js";
+import { createProduct, deleteProduct, deleteProductGalleryImage, editProduct, getAllProduct, updateProduct } from "../controllers/product.controller.js";
 import { isAdmin } from "../middlewares/admin.middleware.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { createUploadMiddleware } from "../middlewares/upload.middleware.js";
@@ -35,6 +35,8 @@ router.put(
 );
 
 router.delete("/product/delete/:id", protect, isAdmin, deleteProduct);
+
+router.delete("/product/gallery-image/delete/:id", protect, isAdmin, deleteProductGalleryImage);
 
 
 export default router;

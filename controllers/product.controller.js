@@ -1,4 +1,5 @@
 import fs from 'fs';
+import mongoose from 'mongoose';
 import path from 'path';
 import brandModel from '../models/brand.model.js';
 import categoryModel from '../models/category.model.js';
@@ -58,9 +59,9 @@ export const getAllProduct = async (req, res) => {
             data: finalProducts
         });
     } catch (error) {
-        console.error("Error fetching products:", error.message);
+        console.error("Error fetching products:", error);
         return res.status(500).json({ 
-            message: error.message, 
+            message: "Server error", 
             status: "error" 
         });
     }
@@ -82,20 +83,15 @@ export const createProduct = async (req, res) => {
             is_featured 
         } = req.body;
 
-        // const thumbnail_image_url = req.file ? `/uploads/products/${req.file.filename}` : null;
-        // handle thumbnail image
-        // const thumbnail_image_url = req.files && req.files.thumbnail_image
-        // ? `/uploads/products/${req.files.thumbnail_image[0].filename}`
-        // : null;
-
-        // console.log("Request files:", req.body);
-
         const thumbnail_image_url = req.files?.thumbnail_image?.[0]
         ? `/uploads/products/${req.files.thumbnail_image[0].filename}`
         : null;
 
         if (!cat_id || !product_name || !short_desc || !long_desc || !regular_price || !sku || !qty) {
-            return res.status(400).json({ message: "All fields are required" });
+            return res.status(400).json({ 
+                message: "All fields are required",
+                status: "error"
+            });
         }
         const newProduct = new Product({
             cat_id,
@@ -113,7 +109,6 @@ export const createProduct = async (req, res) => {
         });
         await newProduct.save();
 
-        // if (req.files && req.files.galleryImages && req.files.galleryImages.length > 0) {
         if (req.files?.galleryImages?.length > 0) {
             const galleryImages = req.files.galleryImages.map(file => ({
                 product_id: newProduct._id,
@@ -121,10 +116,11 @@ export const createProduct = async (req, res) => {
             }));
             await ProductGalleries.insertMany(galleryImages);
         }
+
         return res.status(200).json({ 
             message: "Product created successfully", 
             status: "success", 
-            product: newProduct 
+            data: newProduct 
         });
     } catch (error) {
         console.error("Error creating product:", error);
@@ -138,9 +134,21 @@ export const createProduct = async (req, res) => {
 export const editProduct = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid product ID",
+                status: "error"
+            });
+        }
+
         const product = await Product.findById(id);
+
         if (!product) {
-            return res.status(404).json({ message: "Product not found" });
+            return res.status(404).json({ 
+                message: "Product not found",
+                status: "error"
+            });
         }
 
         const galleries = await ProductGalleries.find({ product_id: id });
@@ -152,9 +160,9 @@ export const editProduct = async (req, res) => {
             gallery_images: galleries
         });
     } catch (error) {
-        console.error("Product fetch error:", error.message);
+        console.error("Error fetching product:", error);
         return res.status(500).json({
-            message: error.message,
+            message: "Server error",
             status: "error"
         });
     }
@@ -163,6 +171,14 @@ export const editProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid product ID",
+                status: "error"
+            });
+        }
+
         const { 
             cat_id, 
             brand_id, 
@@ -179,40 +195,68 @@ export const updateProduct = async (req, res) => {
         } = req.body;
 
         const product = await Product.findById(id);
+
         if (!product) {
-            return res.status(404).json({ message: "Product not found" });
+            return res.status(404).json({ 
+                message: "Product not found",
+                status: "error"
+            });
         }
 
         if (!cat_id) {
-            return res.status(400).json({ message: "Category id is required" });
+            return res.status(400).json({ 
+                message: "Category id is required",
+                status: "error"
+            });
         }
 
         if (!brand_id) {
-            return res.status(400).json({ message: "Brand id is required" });
+            return res.status(400).json({ 
+                message: "Brand id is required",
+                status: "error"
+            });
         }
 
         if (!product_name || product_name.trim() === '') {
-            return res.status(400).json({ message: "Product name is required" });
+            return res.status(400).json({ 
+                message: "Product name is required",
+                status: "error"
+            });
         }
 
         if (!short_desc || short_desc.trim() === '') {
-            return res.status(400).json({ message: "Short description is required" });
+            return res.status(400).json({ 
+                message: "Short description is required",
+                status: "error"
+            });
         }
 
         if (!long_desc || long_desc.trim() === '') {
-            return res.status(400).json({ message: "Long description is required" });
+            return res.status(400).json({ 
+                message: "Long description is required",
+                status: "error"
+            });
         }
 
         if (!regular_price) {
-            return res.status(400).json({ message: "Price is required" });
+            return res.status(400).json({ 
+                message: "Price is required",
+                status: "error"
+            });
         }
 
         if (!sku || sku.trim() === '') {
-            return res.status(400).json({ message: "SKU is required" });
+            return res.status(400).json({ 
+                message: "SKU is required",
+                status: "error" 
+            });
         }
 
         if (!qty) {
-            return res.status(400).json({ message: "Quantity is required" });
+            return res.status(400).json({ 
+                message: "Quantity is required",
+                status: "error" 
+            });
         }
 
         let thumbnail_image_url = product.thumbnail_image_url;
@@ -285,9 +329,9 @@ export const updateProduct = async (req, res) => {
             data: product
         });
     } catch (error) {
-        console.error("Product update error:", error.message);
+        console.error("Product update error:", error);
         return res.status(500).json({
-            message: error.message,
+            message: "Server error",
             status: "error"
         });
     }
@@ -297,9 +341,20 @@ export const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
 
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid product ID",
+                status: "error"
+            });
+        }
+
         const product = await Product.findById(id);
+
         if (!product) {
-            return res.status(404).json({ message: "Product not found" });
+            return res.status(404).json({ 
+                message: "Product not found",
+                status: "error"
+            });
         }
         const productImage = product.thumbnail_image_url;
 
@@ -314,7 +369,7 @@ export const deleteProduct = async (req, res) => {
             }
         }
 
-        /* ------------------ Delete gallery images ------------------ */
+        /* Delete gallery images */
         const galleries = await ProductGalleries.find({ product_id: id });
 
         for (const gallery of galleries) {
@@ -331,9 +386,10 @@ export const deleteProduct = async (req, res) => {
             }
         }
 
-        /* ------------------ Delete gallery records ------------------ */
+        /* Delete gallery records */
         await ProductGalleries.deleteMany({ product_id: id });
 
+        // Product record delete
         await Product.findByIdAndDelete(id);
 
         return res.status(200).json({
@@ -341,11 +397,61 @@ export const deleteProduct = async (req, res) => {
             status: "success"
         });
     } catch (error) {
-        console.error("Product delete error:", error.message);
+        console.error("Error deleting product:", error);
         return res.status(500).json({
-            message: error.message,
+            message: "Server error",
             status: "error"
         });
     }
 }
 
+export const deleteProductGalleryImage = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid product ID",
+                status: "error"
+            });
+        }
+
+        const product_gallery = await ProductGalleries.find({ product_id: id });
+
+        if (!product_gallery)
+        {
+            return res.status(400).json({
+                message: "Product gallery image not found",
+                status: "error"
+            });
+        }
+
+        const image_url = product_gallery.image_url;
+
+        if (image_url) {
+            const oldImagePath = path.join(
+                process.cwd(),
+                'public',
+                product_gallery.image_url
+            );
+            if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+            }
+        }
+
+        await ProductGalleries.findByIdAndDelete({ product_id: id });
+
+        return res.status(200).json({
+            message: "Successfully deleted gallery image",
+            status: "success"
+        });
+        
+    } catch (error) {
+        console.error("Error deleting gallery image:", error);
+        return res.status(500).json({
+            message: "Server error",
+            status: "error"
+        });
+    }
+}
