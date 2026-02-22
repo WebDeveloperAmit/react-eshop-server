@@ -35,7 +35,11 @@ export const allSubCategories = async (req, res) => {
 
 export const createSubCategory = async (req, res) => {
     try {
-        const { sub_category_name, category_id } = req.body;
+        const { 
+            sub_category_name, 
+            category_id 
+        } = req.body;
+
         const sub_category_image = req.file;
 
         if (!sub_category_name || !sub_category_name.trim()) {
@@ -50,12 +54,12 @@ export const createSubCategory = async (req, res) => {
                 status: "error"
             });
         }
-        const imageUrl = `uploads/sub-categories/${sub_category_image.filename}`;
+        const imageUrl = `uploads/sub-categories/${req.file.filename}`;
 
         const newSubCategory = new SubCategoryModel({
             category_id,
             sub_category_name,
-            sub_category_image: imageUrl
+            sub_category_image_url: imageUrl
         });
 
         await newSubCategory.save();

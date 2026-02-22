@@ -17,6 +17,7 @@ import productRoutes from "./routes/product.routes.js";
 import queryRoutes from "./routes/query.routes.js";
 import siteSettingRoutes from "./routes/siteSetting.routes.js";
 import sliderRoutes from "./routes/slider.routes.js";
+import subCategoryRoutes from "./routes/subcategory.routes.js";
 
 const app = express(); // Initialize Express application
 
@@ -52,6 +53,7 @@ app.use("/v1/api", sliderRoutes);
 app.use("/v1/api", siteSettingRoutes);
 app.use("/v1/api", queryRoutes);
 app.use("/v1/api", newsletterRoutes);
+app.use("/v1/api", subCategoryRoutes);
 
 app.get("/", (req, res) => {
     res.send("API is running");
