@@ -9,7 +9,7 @@ const uploadSliderImage = createUploadMiddleware("sliders");
 
 router.get("/sliders", protect, isAdmin, getAllSliders);
 
-router.post("/create-slider", protect, isAdmin, uploadSliderImage.single("slider_image"), createSlider);
+router.post("/slider/create", protect, isAdmin, uploadSliderImage.single("slider_image"), createSlider);
 
 router.get("/slider/:id", protect, isAdmin, getSlider);
 
