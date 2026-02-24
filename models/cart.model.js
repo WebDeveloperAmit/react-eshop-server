@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const cartSchema = new Schema({
-    userId: { 
+    userId: {
         type: Schema.Types.ObjectId, 
-        ref: 'User' 
+        ref: 'User',
+        required: true,
+        unique: true
     },
     products: [
         {
@@ -22,23 +24,37 @@ const cartSchema = new Schema({
             price: { 
                 type: Number,
                 required: true,
-            },
-            total: { 
-                type: Number
             }
         },
     ],
+    cartTotal: {
+        type: Number,
+        default: 0
+    }
 }, {
     timestamps: true
 });
 
-// pre('save') means: "Before we save a cart to the database, run this function first."
 cartSchema.pre('save', function(next) {
+
+  let total = 0;
+
   this.products.forEach(p => {
-    p.total = p.quantity * p.price;
+    total += p.quantity * p.price;
   });
 
-  next(); // next(); After all calculations are done, this tells Mongoose: “Okay, I’m done. Go ahead and save this cart to the database now.”
+  this.cartTotal = total;
+
+  next();
 });
+
+// pre('save') means: "Before we save a cart to the database, run this function first."
+// cartSchema.pre('save', function(next) {
+//   this.products.forEach(p => {
+//     p.total = p.quantity * p.price;
+//   });
+
+//   next(); // next(); After all calculations are done, this tells Mongoose: “Okay, I’m done. Go ahead and save this cart to the database now.”
+// });
 
 export default mongoose.model('Cart', cartSchema);
