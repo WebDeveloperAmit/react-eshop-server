@@ -35,12 +35,16 @@ export const addToCart = async (req, res) => {
       });
     }
 
-    const itemIndex = cart.products.findIndex(
-      (item) => item.productId.toString() === productId
+    // const existingItem = cart.products.find(
+    //   (item) => item.productId.toString() === productId
+    // );
+
+    const existingItem = cart.products.find(
+      (item) => item.productId.equals(productId)
     );
 
-    if (itemIndex > -1) {
-      cart.products[itemIndex].quantity += quantity;
+    if (existingItem) {
+      existingItem.quantity += quantity;
     } else {
       cart.products.push({
         productId,
@@ -48,6 +52,20 @@ export const addToCart = async (req, res) => {
         price: product.price
       });
     }
+
+    // const itemIndex = cart.products.findIndex(
+    //   (item) => item.productId.toString() === productId
+    // );
+
+    // if (itemIndex > -1) {
+    //   cart.products[itemIndex].quantity += quantity;
+    // } else {
+    //   cart.products.push({
+    //     productId,
+    //     quantity,
+    //     price: product.price
+    //   });
+    // }
 
     await cart.save();
 
@@ -115,8 +133,12 @@ export const removeFromCart = async (req, res) => {
       });
     }
 
+    // cart.products = cart.products.filter(
+    //   (item) => item.productId.toString() !== productId
+    // );
+
     cart.products = cart.products.filter(
-      (item) => item.productId.toString() !== productId
+      (item) => !item.productId.equals(productId)
     );
 
     await cart.save();
