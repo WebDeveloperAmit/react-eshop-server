@@ -1,6 +1,3 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
-
 const orderSchema = new Schema(
   {
     user: {
@@ -30,13 +27,28 @@ const orderSchema = new Schema(
       country: String,
       zipCode: String,
     },
+
     paymentMethod: {
       type: String,
-      enum: ["Paypal", "Direct Check", "Bank Transfer"],
+      enum: ["Razorpay", "COD"],
     },
+    razorpayOrderId: String,
+    razorpayPaymentId: String,
+    razorpaySignature: String,
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
+    },
+    paidAt: Date,
     subtotal: Number,
     shipping: Number,
     total: Number,
+    orderStatus: {
+      type: String,
+      enum: ["processing", "shipped", "delivered", "cancelled"],
+      default: "processing",
+    },
     isPaid: {
       type: Boolean,
       default: false,
@@ -44,5 +56,3 @@ const orderSchema = new Schema(
   },
   { timestamps: true }
 );
-
-export default mongoose.model("Order", orderSchema);
