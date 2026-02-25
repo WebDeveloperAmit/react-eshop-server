@@ -2,17 +2,20 @@ import express from "express";
 
 import {
     addToCart,
+    clearCart,
     getCart,
-    removeFromCart
+    removeFromCart,
+    updateCartQuantity
 } from "../controllers/cart.controller.js";
 
-import { isAdmin } from "../middlewares/admin.middleware.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/cart/add", protect, isAdmin, addToCart);
-router.get("/carts", protect, isAdmin, getCart);
-router.delete("/cart/:productId", protect, isAdmin, removeFromCart);
+router.post("/cart", protect, addToCart);
+router.get("/cart", protect, getCart);
+router.delete("/cart/:productId", protect, removeFromCart);
+router.patch("/cart/:productId", protect, updateCartQuantity);
+router.delete("/cart", protect, clearCart);
 
 export default router;
