@@ -1,14 +1,17 @@
+import mongoose from "mongoose";
+const Schema = mongoose.Schema;
+
 const orderSchema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     orderItems: [
       {
         product: {
-          type: mongoose.Schema.Types.ObjectId,
+          type: Schema.Types.ObjectId,
           ref: "Product",
         },
         quantity: Number,
@@ -27,7 +30,6 @@ const orderSchema = new Schema(
       country: String,
       zipCode: String,
     },
-
     paymentMethod: {
       type: String,
       enum: ["Razorpay", "COD"],
@@ -54,5 +56,9 @@ const orderSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true 
+  }
 );
+
+export default mongoose.model('Order', orderSchema);

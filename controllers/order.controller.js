@@ -3,25 +3,37 @@ import Order from "../models/order.model.js";
 
 export const checkout = async (req, res) => {
   try {
-    const { shippingAddress, paymentMethod } = req.body;
+    const { 
+      shippingAddress, 
+      paymentMethod 
+    } = req.body;
 
-    const cart = await Cart.findOne({ user: req.user.id });
+    const cart = await Cart.findOne({ userId: req.user.id });
 
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: "Cart is empty" });
+    if (!cart || cart.products.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Cart is empty"
+      });
     }
 
-    const subtotal = cart.items.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    );
+    // const subtotal = cart.products.reduce(
+    //   (acc, item) => acc + item.price * item.quantity,
+    //   0
+    // );
 
-    const shipping = 10; // static shipping
+    const subtotal = cart.cartTotal;
+
+    const shipping = 10;
     const total = subtotal + shipping;
 
     const order = new Order({
       user: req.user.id,
-      orderItems: cart.items,
+      orderItems: cart.products.map(item => ({
+        product: item.productId,
+        quantity: item.quantity,
+        price: item.price
+      })),
       shippingAddress,
       paymentMethod,
       subtotal,
@@ -31,15 +43,19 @@ export const checkout = async (req, res) => {
 
     await order.save();
 
-    // Clear cart after order
-    cart.items = [];
+    cart.products = [];
     await cart.save();
 
     res.status(201).json({
+      success: true,
       message: "Order placed successfully",
       order,
     });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
