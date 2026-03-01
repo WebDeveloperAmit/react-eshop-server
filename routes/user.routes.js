@@ -8,16 +8,16 @@ import {
     updateProfile,
 } from "../controllers/user.controller.js";
 
-import { protect } from "../middlewares/auth.middleware.js";
+import { userProtectMiddleware } from "../middlewares/user.middleware.js";
 
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
 
-router.get("/profile", protect, getProfile);
-router.put("/profile", protect, updateProfile);
-router.put("/change-password", protect, changePassword);
-router.get("/my-orders", protect, getMyOrders);
+router.get("/profile", userProtectMiddleware, getProfile);
+router.put("/profile", userProtectMiddleware, updateProfile);
+router.put("/change-password", userProtectMiddleware, changePassword);
+router.get("/my-orders", userProtectMiddleware, getMyOrders);
 
 export default router;
