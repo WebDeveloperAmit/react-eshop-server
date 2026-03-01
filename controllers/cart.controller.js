@@ -182,8 +182,12 @@ export const updateCartQuantity = async (req, res) => {
       });
     }
 
+    // const item = cart.products.find(
+    //   (item) => item.productId.toString() === productId
+    // );
+
     const item = cart.products.find(
-      (item) => item.productId.toString() === productId
+      (item) => item.productId.equals(productId)
     );
 
     if (!item) {
