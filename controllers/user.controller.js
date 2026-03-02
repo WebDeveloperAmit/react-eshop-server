@@ -15,10 +15,18 @@ const generateToken = (user) => {
 
 export const register = async (req, res) => {
   try {
-    const { name, email, mobile, password } = req.body;
+    const { 
+      name, 
+      email, 
+      mobile, 
+      password 
+    } = req.body;
 
     const userExists = await User.findOne({
-      $or: [{ email }, { mobile }],
+      $or: [
+        { email }, 
+        { mobile }
+      ],
     });
 
     if (userExists) {
@@ -52,7 +60,10 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { 
+      email, 
+      password 
+    } = req.body;
 
     const user = await User.findOne({ email }).select("+password");
 
@@ -88,10 +99,27 @@ export const login = async (req, res) => {
 };
 
 export const getProfile = async (req, res) => {
-  res.json({
-    success: true,
-    user: req.user,
-  });
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile fetched successfully",
+      user: req.user,
+    });
+
+  } catch (error) {
+    console.error("Get Profile Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
 };
 
 export const updateProfile = async (req, res) => {
@@ -156,11 +184,18 @@ export const changePassword = async (req, res) => {
 };
 
 export const getMyOrders = async (req, res) => {
-  const orders = await Order.find({ user: req.user._id })
-    .sort({ createdAt: -1 });
-
-  res.json({
-    success: true,
-    orders,
-  });
+  try {
+    const orders = await Order.find({ user: req.user._id })
+                              .sort({ createdAt: "desc" });
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    console.error("Get My Orders Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders",
+    });
+  }
 };
