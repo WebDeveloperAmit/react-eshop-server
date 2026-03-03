@@ -15,8 +15,6 @@ router.get(
 
 router.post(
     "/subscribe",
-    protect, 
-    isAdmin, 
     subscribeNewsletter
 );
 
