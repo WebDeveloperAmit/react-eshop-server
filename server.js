@@ -23,8 +23,19 @@ dotenv.config(); // Load environment variables from a .env file into process.env
 
 const app = express(); // Initialize Express application
 
+const allowedOrigins = [
+  process.env.FRONTEND_URI, // frontend
+  process.env.ADMIN_URL  // admin frontend
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URI, // allow frontend
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
