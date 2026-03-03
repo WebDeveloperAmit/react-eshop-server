@@ -21,24 +21,36 @@ export const getAllProduct = async (req, res) => {
 
         const products = await Product
                 .find(query)
-                .sort({ createdAt: 'desc'});
+                .sort({ createdAt: -1 });
 
         const categories = await categoryModel.find({});
         const brands = await brandModel.find({});
+
+        const categoryMap = {};
+        categories.forEach(cat => {
+            categoryMap[cat._id.toString()] = cat.category_name;
+        });
+
+        const brandMap = {};
+        brands.forEach(brand => {
+            brandMap[brand._id.toString()] = brand.brand_name;
+        });
+
         const productIds = products.map(p => p._id);
+
         const galleries = await ProductGalleries.find({
             product_id: { $in: productIds }
         });
 
         const finalProducts = products.map(product => {
 
-            const productCategory = categories.find(
-                c => c._id.toString() === product.category_id?.toString()
-            );
+            // const productCategory = categories.find(
+            //     c => c._id.toString() === product.category_id?.toString()
+            // );
 
-            const productBrand = brands.find(
-                b => b._id.toString() === product.brand_id?.toString()
-            );
+            // const productBrand = brands.find(
+            //     b => b._id.toString() === product.brand_id?.toString()
+            // );
 
             const productGalleries = galleries.filter(
                 g => g.product_id.toString() === product._id.toString()
@@ -46,8 +58,10 @@ export const getAllProduct = async (req, res) => {
 
             return {
                 ...product.toObject(),
-                category_name: productCategory?.category_name || null,
-                brand_name: productBrand?.brand_name || null,
+                // category_name: productCategory?.category_name || null,
+                // brand_name: productBrand?.brand_name || null,
+                category_name: categoryMap[product.cat_id?.toString()] || null,
+                brand_name: brandMap[product.brand_id?.toString()] || null,
                 galleries: productGalleries
             };
 
@@ -63,6 +77,43 @@ export const getAllProduct = async (req, res) => {
         return res.status(500).json({ 
             message: "Server error", 
             status: "error" 
+        });
+    }
+}
+
+export const getSingleProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid product ID",
+                status: "error"
+            });
+        }
+
+        const product = await Product.findById(id);
+
+        if (!product) {
+            return res.status(404).json({ 
+                message: "Product not found",
+                status: "error"
+            });
+        }
+
+        const galleries = await ProductGalleries.find({ product_id: product._id });
+
+        return res.status(200).json({
+            message: "Product fetched successfully",
+            status: "success",
+            data: product,
+            gallery_images: galleries
+        });
+    } catch (error) {
+        console.error("Error fetching product:", error);
+        return res.status(500).json({
+            message: "Server error",
+            status: "error"
         });
     }
 }
