@@ -19,15 +19,18 @@ import siteSettingRoutes from "./routes/siteSetting.routes.js";
 import sliderRoutes from "./routes/slider.routes.js";
 import subCategoryRoutes from "./routes/subcategory.routes.js";
 
+dotenv.config(); // Load environment variables from a .env file into process.env
+
 const app = express(); // Initialize Express application
 
 app.use(cors({
-  origin: "http://localhost:3000", // allow frontend
+  origin: process.env.FRONTEND_URI, // allow frontend
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
-dotenv.config(); // Load environment variables from a .env file into process.env
+app.use(express.json()); // Middleware to parse JSON bodies, Parses incoming JSON data
+app.use(express.urlencoded({ extended: true })); // for form-data / x-www-form-urlencoded
 
 connectDB(); // Connect to the MongoDB database
 
@@ -37,9 +40,6 @@ const __dirname = path.dirname(__filename); // Get the directory name of the cur
 
 // Middleware
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads"))); // Serve static files from the 'public' directory
-
-app.use(express.json()); // Middleware to parse JSON bodies, Parses incoming JSON data
-app.use(express.urlencoded({ extended: true })); // for form-data / x-www-form-urlencoded
 
 app.use(errorHandler); // Custom error handling middleware
 

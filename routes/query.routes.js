@@ -15,8 +15,6 @@ router.get(
 
 router.post(
     "/contact",
-    protect, 
-    isAdmin, 
     saveContactInfo
 );
 
