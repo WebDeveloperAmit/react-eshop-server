@@ -18,6 +18,7 @@ import queryRoutes from "./routes/query.routes.js";
 import siteSettingRoutes from "./routes/siteSetting.routes.js";
 import sliderRoutes from "./routes/slider.routes.js";
 import subCategoryRoutes from "./routes/subcategory.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 dotenv.config(); // Load environment variables from a .env file into process.env
 
@@ -59,12 +60,17 @@ app.use("/v1/api", brandRoutes); // This line registers a set of routes (endpoin
 app.use("/v1/api", categoryRoutes);
 app.use("/v1/api", productRoutes);
 app.use("/v1/api", couponRoutes);
-app.use("/v1/api", authRoutes);
 app.use("/v1/api", sliderRoutes);
 app.use("/v1/api", siteSettingRoutes);
 app.use("/v1/api", queryRoutes);
 app.use("/v1/api", newsletterRoutes);
 app.use("/v1/api", subCategoryRoutes);
+
+// Admin authentication routes
+app.use("/v1/api", authRoutes);
+
+// Frontend authentication routes
+app.use("/v1/api", userRoutes);
 
 app.get("/", (req, res) => {
     res.send("API is running");

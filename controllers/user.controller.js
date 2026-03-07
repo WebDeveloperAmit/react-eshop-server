@@ -31,7 +31,7 @@ export const register = async (req, res) => {
 
     if (userExists) {
       return res.status(400).json({
-        success: false,
+        status: "error",
         message: "Email or mobile already registered",
       });
     }
@@ -45,14 +45,15 @@ export const register = async (req, res) => {
 
     const token = generateToken(user);
 
-    res.status(201).json({
-      success: true,
+    return res.status(201).json({
+      status: "success",
+      message: "User registered successfully",
       token,
       user,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    return res.status(500).json({
+      status: "error",
       message: error.message,
     });
   }
@@ -69,7 +70,7 @@ export const login = async (req, res) => {
 
     if (!user) {
       return res.status(401).json({
-        success: false,
+        status: "error",
         message: "User not found",
       });
     }
@@ -78,21 +79,22 @@ export const login = async (req, res) => {
 
     if (!isMatch) {
       return res.status(401).json({
-        success: false,
+        status: "error",
         message: "Invalid credentials",
       });
     }
 
     const token = generateToken(user);
 
-    res.json({
-      success: true,
+    return res.status(200).json({
+      status: "success",
+      message: "Logged in successfully",
       token,
       user,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    return res.status(500).json({
+      status: "error",
       message: error.message,
     });
   }
@@ -102,13 +104,13 @@ export const getProfile = async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({
-        success: false,
+        status: "error",
         message: "Not authorized",
       });
     }
 
     res.status(200).json({
-      success: true,
+      status: "success",
       message: "Profile fetched successfully",
       user: req.user,
     });
@@ -116,7 +118,7 @@ export const getProfile = async (req, res) => {
   } catch (error) {
     console.error("Get Profile Error:", error);
     res.status(500).json({
-      success: false,
+      status: "error",
       message: "Server error",
     });
   }
@@ -130,7 +132,7 @@ export const updateProfile = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        success: false,
+        status: "error",
         message: "User not found",
       });
     }
@@ -140,14 +142,14 @@ export const updateProfile = async (req, res) => {
 
     await user.save();
 
-    res.json({
-      success: true,
+    return res.json({
+      status: "success",
       message: "Profile updated successfully",
       user,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    return res.status(500).json({
+      status: "error",
       message: error.message,
     });
   }
@@ -163,7 +165,7 @@ export const changePassword = async (req, res) => {
 
     if (!isMatch) {
       return res.status(400).json({
-        success: false,
+        status: "error",
         message: "Current password incorrect",
       });
     }
@@ -171,13 +173,13 @@ export const changePassword = async (req, res) => {
     user.password = newPassword;
     await user.save();
 
-    res.json({
-      success: true,
+    return res.json({
+      status: "success",
       message: "Password updated successfully",
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    return res.status(500).json({
+      status: "error",
       message: error.message,
     });
   }
@@ -187,14 +189,14 @@ export const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
                               .sort({ createdAt: "desc" });
-    res.status(200).json({
-      success: true,
+    return res.status(200).json({
+      status: "success",
       orders,
     });
   } catch (error) {
     console.error("Get My Orders Error:", error);
-    res.status(500).json({
-      success: false,
+    return res.status(500).json({
+      status: "error",
       message: "Failed to fetch orders",
     });
   }
