@@ -188,9 +188,13 @@ export const changePassword = async (req, res) => {
 export const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
-                              .sort({ createdAt: "desc" });
+        .populate("orderItems.product", "name")
+        .sort({ createdAt: -1 })
+        .lean();
+
     return res.status(200).json({
       status: "success",
+      message: "Orders fetched successfully",
       orders,
     });
   } catch (error) {
