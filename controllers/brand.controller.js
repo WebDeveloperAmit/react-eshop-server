@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 import fs from 'fs';
 import path from 'path';
+=======
+<<<<<<< HEAD
+=======
+import fs from 'fs';
+import path from 'path';
+>>>>>>> amit_dev_lap
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
 import Brand from '../models/brand.model.js';
 
 export const getAllBrands = async (req, res) => {
     try {
+<<<<<<< HEAD
         const { search } = req.query; // Extract search query parameter from the request
         let query = {}; // Initialize an empty query object
 
@@ -28,29 +37,107 @@ export const getAllBrands = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching models", error);
+=======
+<<<<<<< HEAD
+        const brands = await Brand.find().sort({createdAt: "desc"});
+        return res.status(200).json({message: "Fetching all brands", status: "success", brand: brands});
+    } catch (error) {
+        console.error("Error fetching models", error);
+        return res.status(500).json({message: "Server Error", status: "error"});
+=======
+        const { search } = req.query; // Extract search query parameter from the request
+        let query = {}; // Initialize an empty query object
+
+        if (search) {
+            query = { // If a search query is provided, construct a query to search for brands by name or slug
+                $or: [
+                    { brand_name: { $regex: search, $options: "i" } }, // Case-insensitive search for brand name
+                    { brand_slug: { $regex: search, $options: "i" } }
+                ]
+            };
+        }
+
+        const brands = await Brand
+                    .find(query)
+                    .sort({ createdAt: "desc" });
+
+        return res.status(200).json({
+            message: "Fetching all brands", 
+            status: "success", 
+            brand: brands
+        });
+
+    } catch (error) {
+        console.error("Error fetching models", error);
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
         return res.status(500).json({
             message: "Server Error", 
             status: "error"
         });
+<<<<<<< HEAD
+=======
+>>>>>>> amit_dev_lap
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
     }
 }
 
 export const createBrand = async (req, res) => {
     try {
         const { brand_name } = req.body;
+<<<<<<< HEAD
+        
+=======
+<<<<<<< HEAD
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
+        const brand_image_url = req.file ? `uploads/brands/${req.file.filename}` : null;
+
+        if (!brand_name) {
+<<<<<<< HEAD
+=======
+            return res.status(400).json({message: "Brand name is required"});
+=======
         
         const brand_image_url = req.file ? `uploads/brands/${req.file.filename}` : null;
 
         if (!brand_name) {
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
             return res.status(400).json({
                 message: "Brand name is required",
                 status: "error"
             });
+<<<<<<< HEAD
+=======
+>>>>>>> amit_dev_lap
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
         }
         const newBrand = new Brand({
             brand_name,
             brand_image_url
         });
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
+        await newBrand.save();
+
+        return res.status(200).json({
+            message: "Brand created successfully", 
+            status: "success", 
+            brand: newBrand
+        });
+    } catch (error) {
+        if (error.code === 11000 && error.keyPattern?.brand_name) {
+            return res.status(400).json({
+                message: "Brand name already exists",
+                status: "error"
+            });
+        }
+        console.error("Error creating brand:", error);
+<<<<<<< HEAD
+=======
+        return res.status(500).json({message: "Server Error", status: "error"});
+=======
 
         await newBrand.save();
 
@@ -67,6 +154,7 @@ export const createBrand = async (req, res) => {
             });
         }
         console.error("Error creating brand:", error);
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
         return res.status(500).json({
             message: "Server Error", 
             status: "error"
@@ -182,5 +270,9 @@ export const deleteBrand = async (req, res) => {
             message: "Server error", 
             status: "error" 
         });
+<<<<<<< HEAD
+=======
+>>>>>>> amit_dev_lap
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
     }
 }

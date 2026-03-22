@@ -2,6 +2,44 @@ import Coupon from "../models/coupon.model.js";
 
 export const getAllCoupons = async (req, res) => {
     try {
+<<<<<<< HEAD
+        const { search } = req.query;
+
+        let query = {};
+
+        if (search) {
+            query = {
+                $or: [
+                    { code: { $regex: search, $options: "i" } },
+                    { type: { $regex: search, $options: "i" } }
+                ]
+            };
+        }
+
+        const coupons = await Coupon
+        .find(query)
+        .sort({ createdAt: 'desc' });
+
+        return res.status(200).json({ 
+            message: "Fetching all coupons", 
+            status: "success", 
+            coupon: coupons 
+        });
+=======
+<<<<<<< HEAD
+        const coupons = await Coupon.find().sort({ createdAt: 'desc' });
+        return res.status(200).json({ message: "Fetching all coupons", status: "success", coupon: coupons });
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
+    } catch (error) {
+        console.error("Error fetching coupons:", error);
+        return res.status(500).json({ 
+            message: "Server error", 
+            status: "error" 
+        });
+    }
+}
+  
+=======
         const { search } = req.query;
 
         let query = {};
@@ -32,7 +70,8 @@ export const getAllCoupons = async (req, res) => {
         });
     }
 }
-  
+
+>>>>>>> amit_dev_lap
 export const createCoupon = async (req, res) => {
     try {
         // Logic to create a new coupon
@@ -59,6 +98,11 @@ export const createCoupon = async (req, res) => {
         console.error("Error creating coupon:", error);
         return res.status(500).json({ message: "Server error", status: "error" });
     }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
 }
 
 export const getCoupon = async (req, res) => {
@@ -148,4 +192,8 @@ export const deleteCoupon = async (req, res) => {
             status: "error" 
         });
     }
+<<<<<<< HEAD
+=======
+>>>>>>> amit_dev_lap
+>>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
 }
