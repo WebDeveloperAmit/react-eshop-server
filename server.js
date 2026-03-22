@@ -12,16 +12,6 @@ import authRoutes from "./routes/auth/auth.routes.js";
 import brandRoutes from "./routes/brand.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
-<<<<<<< HEAD
-import productRoutes from "./routes/product.routes.js";
-import siteSettingRoutes from "./routes/siteSetting.routes.js";
-import sliderRoutes from "./routes/slider.routes.js";
-
-const app = express(); // Initialize Express application
-
-app.use(cors({
-  origin: "http://localhost:3000", // allow frontend
-=======
 import newsletterRoutes from "./routes/newsletter.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import queryRoutes from "./routes/query.routes.js";
@@ -47,21 +37,10 @@ app.use(cors({
       callback(new Error("Not allowed by CORS"));
     }
   },
->>>>>>> amit_dev_lap
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
-<<<<<<< HEAD
-dotenv.config(); // Load environment variables from a .env file into process.env
-
-connectDB(); // Connect to the MongoDB database
-
-const __filename = fileURLToPath(import.meta.url); // Get the current file path
-<<<<<<< HEAD
-
-=======
-=======
 app.use(express.json()); // Middleware to parse JSON bodies, Parses incoming JSON data
 app.use(express.urlencoded({ extended: true })); // for form-data / x-www-form-urlencoded
 
@@ -69,27 +48,12 @@ connectDB(); // Connect to the MongoDB database
 
 const __filename = fileURLToPath(import.meta.url); // Get the current file path
 
->>>>>>> amit_dev_lap
->>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
 const __dirname = path.dirname(__filename); // Get the directory name of the current module
 
 // Middleware
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads"))); // Serve static files from the 'public' directory
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
->>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
-app.use(express.json()); // Middleware to parse JSON bodies, Parses incoming JSON data
 
-app.use(express.urlencoded({ extended: true })); // for form-data / x-www-form-urlencoded
-<<<<<<< HEAD
-
-=======
-=======
-
->>>>>>> amit_dev_lap
->>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
 app.use(errorHandler); // Custom error handling middleware
 
 // Mount routers
@@ -97,11 +61,6 @@ app.use("/v1/api", brandRoutes); // This line registers a set of routes (endpoin
 app.use("/v1/api", categoryRoutes);
 app.use("/v1/api", productRoutes);
 app.use("/v1/api", couponRoutes);
-<<<<<<< HEAD
-app.use("/v1/api", authRoutes);
-app.use("/v1/api", sliderRoutes);
-app.use("/v1/api", siteSettingRoutes);
-=======
 app.use("/v1/api", sliderRoutes);
 app.use("/v1/api", siteSettingRoutes);
 app.use("/v1/api", queryRoutes);
@@ -113,7 +72,6 @@ app.use("/v1/api", authRoutes);
 
 // Frontend authentication routes
 app.use("/v1/api", userRoutes);
->>>>>>> amit_dev_lap
 
 app.get("/", (req, res) => {
     res.send("API is running");
