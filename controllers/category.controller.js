@@ -1,46 +1,3 @@
-<<<<<<< HEAD
-import fs from 'fs';
-import path from 'path';
-=======
-<<<<<<< HEAD
->>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
-import Category from "../models/category.model.js";
-
-// All categories
-export const getAllCategories = async (req, res) => {
-    try {
-        const { search } = req.query;
-        let query = {};
-        if (search) {
-            query = {
-                $or: [
-                    { category_name: { $regex: search, $options: "i" } }
-                ]
-            };
-        }
-        const categories = await Category
-        .find(query)
-        .sort({ createdAt: 'desc'});
-
-        return res.status(200).json({ 
-            message: "Fetching all categories", 
-            status: "success", 
-            data: categories 
-        });
-    } catch (error) {
-        console.error("Error fetching categories:", error);
-        return res.status(500).json({ 
-            message: "Server error", 
-            status: "error" 
-        });
-    }
-}
-
-<<<<<<< HEAD
-// Create new category
-=======
-// Controller to create a new category
-=======
 import fs from 'fs';
 import path from 'path';
 import Category from "../models/category.model.js";
@@ -76,8 +33,6 @@ export const getAllCategories = async (req, res) => {
 }
 
 // Create new category
->>>>>>> amit_dev_lap
->>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
 export const createCategory = async (req, res) => {
     try {
         const { category_name } = req.body;
@@ -102,11 +57,7 @@ export const createCategory = async (req, res) => {
         console.error("Error creating category:", error);
         return res.status(500).json({ message: "Server error", status: "error" });
     }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
+
 }
 
 // Get single category
@@ -221,8 +172,5 @@ export const deleteCategory = async (req, res) => {
             status: "error" 
         });
     }
-<<<<<<< HEAD
-=======
->>>>>>> amit_dev_lap
->>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
+
 }

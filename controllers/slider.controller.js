@@ -1,26 +1,10 @@
-<<<<<<< HEAD
-import fs from 'fs';
-import path from 'path';
-=======
-<<<<<<< HEAD
-=======
 import fs from 'fs';
 import mongoose from 'mongoose';
 import path from 'path';
->>>>>>> amit_dev_lap
->>>>>>> 9283a0506b529cb749bfce52d7f3df25da5469e4
 import Slider from "../models/slider.model.js";
 
 export const getAllSliders = async (req, res) => {
     try {
-<<<<<<< HEAD
-        const sliders = await Slider.find().sort({ createdAt: "desc" });
-        return res.status(200).json({ message: "Fetching all sliders", status: "success", slider: sliders });
-    } catch (error) {
-        console.error("Error fetching sliders:", error);
-        return res.status(500).json({ message: "Server Error", status: "error" });
-=======
-
         const { search } = req.query;
         let query = {};
         if (search)
@@ -50,7 +34,7 @@ export const getAllSliders = async (req, res) => {
             message: "Server Error", 
             status: "error" 
         });
->>>>>>> amit_dev_lap
+
     }
 }
 
@@ -93,12 +77,6 @@ export const createSlider = async (req, res) => {
             message: "Slider created successfully", 
             status: "success", 
             slider: newSlider 
-        });
-    } catch (error) {
-        console.error("Error creating sliders:", error);
-        return res.status(500).json({ 
-            message: "Server Error", 
-            status: "error" 
         });
     }
 }
