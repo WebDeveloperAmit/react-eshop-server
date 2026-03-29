@@ -1,16 +1,16 @@
 import express from "express"; // Import the Express library
 
 import { createProduct, deleteProduct, deleteProductGalleryImage, editProduct, getAllProduct, getSingleProduct, updateProduct } from "../controllers/product.controller.js";
+
 import { isAdmin } from "../middlewares/admin.middleware.js";
 import { protect } from "../middlewares/auth.middleware.js";
+
 import { createUploadMiddleware } from "../middlewares/upload.middleware.js";
 
 const router = express.Router(); // Create a new router object / Instance of the Express Router
 
 // Use dynamic folder
 const uploadProductImage = createUploadMiddleware("products");
-
-router.get("/products", protect, isAdmin, getAllProduct);
 
 // Public routes
 router.get("/products", getAllProduct);
