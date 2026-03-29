@@ -10,6 +10,7 @@ import { errorHandler } from "./middlewares/error.middleware.js";
 // Route files
 import authRoutes from "./routes/auth/auth.routes.js";
 import brandRoutes from "./routes/brand.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import newsletterRoutes from "./routes/newsletter.routes.js";
@@ -66,6 +67,9 @@ app.use("/v1/api", siteSettingRoutes);
 app.use("/v1/api", queryRoutes);
 app.use("/v1/api", newsletterRoutes);
 app.use("/v1/api", subCategoryRoutes);
+
+// Cart routes
+app.use("/v1/api", cartRoutes);
 
 // Admin authentication routes
 app.use("/v1/api", authRoutes);
