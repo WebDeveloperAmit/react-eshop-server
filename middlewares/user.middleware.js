@@ -13,7 +13,7 @@ export const userProtectMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded JWT:", decoded);
+    // console.log("Decoded JWT:", decoded);
 
     const user = await User.findById(decoded.id);
 
