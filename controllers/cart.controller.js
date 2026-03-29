@@ -76,26 +76,23 @@ GET CART
 */
 export const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.user.id })
+    const cart = await Cart.findOne({ userId: req.user._id })
                       .populate("products.productId");
 
     if (!cart) {
       return res.status(200).json({
-        success: true,
-        data: {
-          products: [],
-          cartTotal: 0
-        }
+        status: "success",
+        data: []
       });
     }
 
     return res.status(200).json({
-      success: true,
+      status: "success",
       data: cart
     });
   } catch (error) {
     return res.status(500).json({
-      success: false,
+      status: "error",
       message: error.message
     });
   }
