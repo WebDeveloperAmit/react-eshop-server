@@ -14,6 +14,7 @@ import cartRoutes from "./routes/cart.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import newsletterRoutes from "./routes/newsletter.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import queryRoutes from "./routes/query.routes.js";
 import siteSettingRoutes from "./routes/siteSetting.routes.js";
@@ -67,6 +68,7 @@ app.use("/v1/api", siteSettingRoutes);
 app.use("/v1/api", queryRoutes);
 app.use("/v1/api", newsletterRoutes);
 app.use("/v1/api", subCategoryRoutes);
+app.use("/v1/api", orderRoutes);
 
 // Cart routes
 app.use("/v1/api", cartRoutes);
