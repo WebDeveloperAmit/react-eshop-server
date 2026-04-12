@@ -46,10 +46,10 @@ export const checkout = async (req, res) => {
       shippingAddress,
 
       paymentMethod,
-      paymentStatus: paymentMethod === "cod" ? "paid" : "pending",
+      paymentStatus: paymentMethod === "COD" ? "paid" : "pending",
       paidAt: new Date(),
-      isPaid: paymentMethod === "cod" ? true : false,
-      
+      isPaid: paymentMethod === "COD" ? true : false,
+
       subtotal,
       shipping,
       total
@@ -59,7 +59,7 @@ export const checkout = async (req, res) => {
     cart.products = [];
     await cart.save();
 
-    if (paymentMethod === "cod") {
+    if (paymentMethod === "COD") {
       return res.status(201).json({
         status: true,
         message: "Order placed successfully",
