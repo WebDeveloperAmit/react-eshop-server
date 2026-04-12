@@ -4,15 +4,19 @@ import Order from "../models/order.model.js";
 export const checkout = async (req, res) => {
   try {
     const { 
+      billingAddress,
       shippingAddress, 
-      paymentMethod 
+      orderItems,
+      paymentMethod,
+      subtotal,
+      total 
     } = req.body;
 
-    const cart = await Cart.findOne({ userId: req.user.id });
+    const cart = await Cart.findOne({ userId: req.user._id });
 
     if (!cart || cart.products.length === 0) {
       return res.status(400).json({
-        success: false,
+        status: false,
         message: "Cart is empty"
       });
     }
@@ -22,39 +26,45 @@ export const checkout = async (req, res) => {
     //   0
     // );
 
-    const subtotal = cart.cartTotal;
+    // const subtotal = cart.cartTotal;
 
-    const shipping = 10;
-    const total = subtotal + shipping;
+    // const shipping = 10;
+    // const total = subtotal + shipping;
 
     const order = new Order({
-      user: req.user.id,
-      orderItems: cart.products.map(item => ({
+      user: req.user._id,
+      orderItems: orderItems.map(item => ({
         product: item.productId,
         quantity: item.quantity,
         price: item.price
       })),
+      billingAddress,
       shippingAddress,
       paymentMethod,
+      paidAt: new Date(),
       subtotal,
-      shipping,
-      total,
+      shipping: 1254,
+      isPaid: 'Yes',
+      total
     });
-
     await order.save();
 
     cart.products = [];
     await cart.save();
 
-    res.status(201).json({
-      success: true,
-      message: "Order placed successfully",
-      order,
-    });
+    if (paymentMethod === "cod") {
+      return res.status(201).json({
+        status: true,
+        message: "Order placed successfully",
+        order,
+      });
+    } else if (paymentMethod === "Razorpay") {
+
+    }
 
   } catch (error) {
     res.status(500).json({
-      success: false,
+      status: false,
       message: error.message
     });
   }

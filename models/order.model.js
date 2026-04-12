@@ -1,6 +1,24 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
+
+// Reusable Address Schema
+const addressSchema = new Schema(
+  {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    mobile: { type: String, required: true },
+    address1: { type: String, required: true },
+    address2: { type: String },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    country: { type: String, required: true },
+    zipCode: { type: String, required: true },
+  },
+  { _id: false } // prevents extra _id inside address
+);
+
 const orderSchema = new Schema(
   {
     user: {
@@ -18,17 +36,13 @@ const orderSchema = new Schema(
         price: Number,
       },
     ],
+    billingAddress: {
+      type: addressSchema,
+      required: true,
+    },
     shippingAddress: {
-      firstName: String,
-      lastName: String,
-      email: String,
-      mobile: String,
-      address1: String,
-      address2: String,
-      city: String,
-      state: String,
-      country: String,
-      zipCode: String,
+      type: addressSchema,
+      required: true,
     },
     paymentMethod: {
       type: String,
