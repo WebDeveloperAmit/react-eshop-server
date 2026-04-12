@@ -3,14 +3,16 @@ import Order from "../models/order.model.js";
 
 export const checkout = async (req, res) => {
   try {
-    const { 
+    const {
       billingAddress,
-      shippingAddress, 
+      shippingAddress,
       orderItems,
       paymentMethod,
       subtotal,
-      total 
+      shipping,
+      total
     } = req.body;
+
 
     const cart = await Cart.findOne({ userId: req.user._id });
 
@@ -33,18 +35,23 @@ export const checkout = async (req, res) => {
 
     const order = new Order({
       user: req.user._id,
+
       orderItems: orderItems.map(item => ({
-        product: item.productId,
+        product: item.productId || item._id,
         quantity: item.quantity,
         price: item.price
       })),
+
       billingAddress,
       shippingAddress,
+
       paymentMethod,
+      paymentStatus: paymentMethod === "cod" ? "paid" : "pending",
       paidAt: new Date(),
+      isPaid: paymentMethod === "cod" ? true : false,
+      
       subtotal,
-      shipping: 1254,
-      isPaid: 'Yes',
+      shipping,
       total
     });
     await order.save();
