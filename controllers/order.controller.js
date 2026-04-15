@@ -99,7 +99,7 @@ export const checkout = async (req, res) => {
 };
 
 
-export const verifyPayment = async (req, res) => {``
+export const verifyPayment = async (req, res) => {
   try {
     const {
       razorpay_order_id,
@@ -150,8 +150,11 @@ export const verifyPayment = async (req, res) => {``
 
     // clear cart
     const cart = await Cart.findOne({ userId: order.user });
-    cart.products = [];
-    await cart.save();
+
+    if (cart) {
+      cart.products = [];
+      await cart.save();
+    }
 
     return res.status(200).json({
       status: true,
@@ -159,6 +162,7 @@ export const verifyPayment = async (req, res) => {``
     });
 
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       status: false,
       message: error.message
