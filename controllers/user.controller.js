@@ -188,7 +188,7 @@ export const changePassword = async (req, res) => {
 export const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
-        .populate("orderItems.product", "name")
+        .populate("orderItems.product", "product_name")
         .sort({ createdAt: -1 })
         .lean();
 

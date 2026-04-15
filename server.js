@@ -79,6 +79,8 @@ app.use("/v1/api", authRoutes);
 // Frontend authentication routes
 app.use("/v1/api", userRoutes);
 
+app.use("/v1/api/order/webhook", express.raw({ type: "*/*" }));
+
 app.get("/", (req, res) => {
     res.send("API is running");
 });
