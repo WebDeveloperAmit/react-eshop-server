@@ -101,11 +101,19 @@ export const checkout = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
+    console.log("VERIFY BODY:", req.body);
     const {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature
     } = req.body;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({
+        status: false,
+        message: "Missing payment data"
+      });
+    }
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
@@ -113,6 +121,9 @@ export const verifyPayment = async (req, res) => {
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body)
       .digest("hex");
+
+    console.log("EXPECTED:", expectedSignature);
+    console.log("RECEIVED:", razorpay_signature);
 
     if (expectedSignature !== razorpay_signature) {
       return res.status(400).json({
