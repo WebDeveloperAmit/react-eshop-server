@@ -26,7 +26,7 @@ dotenv.config(); // Load environment variables from a .env file into process.env
 
 const app = express(); // Initialize Express application
 
-app.use("/v1/api/webhook", express.raw({ type: "application/json" }));
+// app.use("/v1/api/webhook", express.raw({ type: "application/json" }));
 
 const allowedOrigins = [
   process.env.FRONTEND_URI, // frontend

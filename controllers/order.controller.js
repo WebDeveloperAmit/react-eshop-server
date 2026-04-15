@@ -101,7 +101,7 @@ export const checkout = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
-    console.log("VERIFY BODY:", req.body);
+    
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -121,9 +121,6 @@ export const verifyPayment = async (req, res) => {
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body)
       .digest("hex");
-
-    console.log("EXPECTED:", expectedSignature);
-    console.log("RECEIVED:", razorpay_signature);
 
     if (expectedSignature !== razorpay_signature) {
       return res.status(400).json({
@@ -183,7 +180,6 @@ export const verifyPayment = async (req, res) => {
 
 
 export const razorpayWebhook = async (req, res) => {
-
   try {
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
@@ -191,14 +187,13 @@ export const razorpayWebhook = async (req, res) => {
 
     const expectedSignature = crypto
       .createHmac("sha256", secret)
-      .update(JSON.stringify(req.body))
+      .update(req.body) // RAW BODY
       .digest("hex");
 
     if (signature !== expectedSignature) {
       return res.status(400).send("Invalid webhook signature");
     }
 
-    // const event = req.body;
     const event = JSON.parse(req.body.toString());
 
     if (event.event === "payment.captured") {
@@ -226,10 +221,65 @@ export const razorpayWebhook = async (req, res) => {
     }
 
     res.status(200).json({ status: "ok" });
+
   } catch (error) {
+    console.error("WEBHOOK ERROR:", error);
     res.status(500).json({
       status: false,
       message: error.message
     });
   }
 };
+
+
+// export const razorpayWebhook = async (req, res) => {
+
+//   try {
+//     const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+//     const signature = req.headers["x-razorpay-signature"];
+
+//     const expectedSignature = crypto
+//       .createHmac("sha256", secret)
+//       .update(JSON.stringify(req.body))
+//       .digest("hex");
+
+//     if (signature !== expectedSignature) {
+//       return res.status(400).send("Invalid webhook signature");
+//     }
+
+//     // const event = req.body;
+//     const event = JSON.parse(req.body.toString());
+
+//     if (event.event === "payment.captured") {
+//       const payment = event.payload.payment.entity;
+
+//       const order = await Order.findOne({
+//         razorpayOrderId: payment.order_id
+//       });
+
+//       if (order && !order.isPaid) {
+//         order.razorpayPaymentId = payment.id;
+//         order.paymentStatus = "paid";
+//         order.isPaid = true;
+//         order.paidAt = new Date();
+
+//         await order.save();
+
+//         const cart = await Cart.findOne({ userId: order.user });
+
+//         if (cart) {
+//           cart.products = [];
+//           await cart.save();
+//         }
+//       }
+//     }
+
+//     res.status(200).json({ status: "ok" });
+//   } catch (error) {
+//     res.status(500).json({
+//       status: false,
+//       message: error.message
+//     });
+//   }
+// };
