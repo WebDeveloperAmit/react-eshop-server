@@ -26,6 +26,8 @@ dotenv.config(); // Load environment variables from a .env file into process.env
 
 const app = express(); // Initialize Express application
 
+app.use("/v1/api/webhook", express.raw({ type: "application/json" }));
+
 const allowedOrigins = [
   process.env.FRONTEND_URI, // frontend
   process.env.ADMIN_URL  // admin frontend
@@ -56,8 +58,6 @@ const __dirname = path.dirname(__filename); // Get the directory name of the cur
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads"))); // Serve static files from the 'public' directory
 
 
-app.use(errorHandler); // Custom error handling middleware
-
 // Mount routers
 app.use("/v1/api", brandRoutes); // This line registers a set of routes (endpoints), prefixed with /vi/api
 app.use("/v1/api", categoryRoutes);
@@ -79,7 +79,9 @@ app.use("/v1/api", authRoutes);
 // Frontend authentication routes
 app.use("/v1/api", userRoutes);
 
-app.use("/v1/api/order/webhook", express.raw({ type: "*/*" }));
+app.use(errorHandler); // Custom error handling middleware
+
+// app.use("/v1/api/order/webhook", express.raw({ type: "*/*" }));
 
 app.get("/", (req, res) => {
     res.send("API is running");
