@@ -60,6 +60,18 @@ const ProductSchema = new Schema({
         type: Boolean,
         default: false
     },
+    just_arrived: {
+        type: Boolean,
+        default: false
+    },
+    is_trendy: {
+        type: Boolean,
+        default: false
+    },
+    is_top_selling: {
+        type: Boolean,
+        default: false
+    },
     thumbnail_image_url: {
         type: String,
         required: [true, 'Thumbnail image is required']

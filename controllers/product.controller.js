@@ -131,7 +131,10 @@ export const createProduct = async (req, res) => {
             sku, 
             qty, 
             stock_status, 
-            is_featured 
+            is_featured,
+            just_arrived,
+            is_trendy,
+            is_top_selling
         } = req.body;
 
 
@@ -158,6 +161,9 @@ export const createProduct = async (req, res) => {
             qty,
             stock_status,
             is_featured,
+            just_arrived,
+            is_trendy,
+            is_top_selling,
             thumbnail_image_url
         });
         await newProduct.save();
@@ -246,7 +252,10 @@ export const updateProduct = async (req, res) => {
             sku, 
             qty, 
             stock_status, 
-            is_featured
+            is_featured,
+            just_arrived,
+            is_trendy,
+            is_top_selling
         } = req.body;
 
         const product = await Product.findById(id);
@@ -374,6 +383,9 @@ export const updateProduct = async (req, res) => {
         product.qty = qty ?? product.qty;
         product.stock_status = stock_status ?? product.stock_status;
         product.is_featured = is_featured ?? product.is_featured;
+        product.just_arrived = just_arrived ?? product.just_arrived;
+        product.is_trendy = is_trendy ?? product.is_trendy;
+        product.is_top_selling = is_top_selling ?? product.is_top_selling;
         product.thumbnail_image_url = thumbnail_image_url ?? product.thumbnail_image_url;
 
         await product.save();
