@@ -6,23 +6,8 @@ import { protect } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get(
-    "/subscribes", 
-    protect, 
-    isAdmin, 
-    getAllSubscribeNewsletter
-);
-
-router.post(
-    "/subscribe",
-    subscribeNewsletter
-);
-
-router.delete(
-    "/subscribe/delete/:id",
-    protect, 
-    isAdmin, 
-    deleteSubscribeNewsletter
-);
+router.get("/admin/subscribes", protect, isAdmin, getAllSubscribeNewsletter);
+router.post("/subscribe", subscribeNewsletter); // Public route for subscribing to the newsletter
+router.delete("/admin/subscribe/:id", protect, isAdmin, deleteSubscribeNewsletter);
 
 export default router;

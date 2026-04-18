@@ -5,7 +5,9 @@ import { sendEmail } from "../utils/sendEmail.js";
 export const getAllSubscribeNewsletter = async (req, res) => {
     try {
         const { search } = req.query;
+
         let query = {};
+
         if (search) {
             query = {
                 $or: [
@@ -14,26 +16,31 @@ export const getAllSubscribeNewsletter = async (req, res) => {
                 ]
             }
         }
+
         const response = await NewsletterModel
                             .find(query)
                             .sort({ createAt: -1 });
+
         if (!response) {
             return res.status(404).json({
-                message: "No subscribe found",
-                status: "error"
+                status: "error",
+                message: "No subscribe found"
             });
         }
         return res.status(200).json({
-            message: "Successfuly fetched",
             status: "success",
+            message: "Successfuly fetched",
             data: response
         });
+
     } catch (error) {
         console.error("Error fetching subscribe mail:", error);
+
         return res.status(500).json({
-            message: "Server error",
-            status: "error"
+            status: "error",
+            message: "Server error"
         });
+
     }
 }
 
@@ -118,8 +125,8 @@ export const deleteSubscribeNewsletter = async (req, res) => {
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                message: "Invalid ID",
-                status: "error"
+                status: "error",
+                message: "Invalid ID"
             });
         }
 
@@ -127,21 +134,21 @@ export const deleteSubscribeNewsletter = async (req, res) => {
 
         if (!response) {
             return res.status(404).json({
-                message: "No subscribe found",
-                status: "error"
+                status: "error",
+                message: "No subscribe data found",
             });
         }
 
         return res.status(200).json({
-            message: "Successfully deleted",
-            status: "success"
+            status: "success",
+            message: "Subscribe data deleted successfully"
         });
 
     } catch (error) {
         console.error("Error deleting:", error);
         return res.status(500).json({
-            message: "Server error",
-            status: "error"
+            status: "error",
+            message: "Server error"
         });
     }
 }
