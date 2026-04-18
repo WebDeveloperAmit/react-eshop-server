@@ -69,13 +69,17 @@ export const createSlider = async (req, res) => {
         });
         await newSlider.save();
 
-        return res.status(200).json({ message: "Slider created successfully", status: "success", slider: newSlider });
+        return res.status(200).json({ 
+            status: "success", 
+            message: "Slider created successfully", 
+            slider: newSlider 
+        });
     } catch (error) {
         console.error("Error create sliders:", error);
 
         return res.status(200).json({ 
-            message: "Slider created successfully", 
             status: "success", 
+            message: "Slider created successfully", 
             slider: newSlider 
         });
     }
@@ -196,12 +200,13 @@ export const updateSlider = async (req, res) => {
 
 export const deleteSlider = async (req, res) => {
     try {
+        
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                message: "Invalid ID",
-                status: "error"
+                status: "error",
+                message: "Invalid ID"
             });
         }
 
@@ -209,33 +214,40 @@ export const deleteSlider = async (req, res) => {
 
         if (!slider) {
             return res.status(404).json({ 
-                message: "Slider not found", 
-                status: "error" 
+                status: "error",
+                message: "Slider not found"
             });
         }
+
         if (slider.slider_image_url) {
+
             const imagePath = path.join(
                 process.cwd(), // Get current working directory
                 'public', // Assuming 'public' is the folder where uploads are stored
                 slider.slider_image_url
             );
+
             if (fs.existsSync(imagePath)) { // Check if file exists
                 fs.unlinkSync(imagePath); // Synchronously delete the file
             }
+
         }
 
         await Slider.findByIdAndDelete(id);
 
         return res.status(200).json({ 
-            message: "Slider deleted successfully", 
             status: "success",
+            message: "Slider deleted successfully"
         });
+
     } catch (error) {
         console.error("Error deleting slider:", error);
+
         return res.status(500).json({ 
-            message: "Server Error", 
-            status: "error" 
+            status: "error", 
+            message: "Server Error"
         });
+
 
     }
 }

@@ -9,14 +9,14 @@ const router = express.Router();
 
 const uploadSliderImage = createUploadMiddleware("sliders");
 
-router.get("/sliders", protect, isAdmin, getAllSliders);
+router.get("/admin/sliders", protect, isAdmin, getAllSliders);
 
-router.post("/slider/create", protect, isAdmin, uploadSliderImage.single("slider_image"), createSlider);
+router.post("/admin/slider/create", protect, isAdmin, uploadSliderImage.single("slider_image"), createSlider);
 
-router.get("/slider/:id", protect, isAdmin, getSlider);
+router.get("/admin/slider/:id", protect, isAdmin, getSlider);
 
-router.put("/slider/update/:id", protect, isAdmin, uploadSliderImage.single("slider_image"), updateSlider);
+router.put("/admin/slider/update/:id", protect, isAdmin, uploadSliderImage.single("slider_image"), updateSlider);
 
-router.delete("/slider/delete/:id", protect, isAdmin, deleteSlider);
+router.delete("/admin/slider/delete/:id", protect, isAdmin, deleteSlider);
 
 export default router;
