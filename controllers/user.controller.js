@@ -205,3 +205,28 @@ export const getMyOrders = async (req, res) => {
     });
   }
 };
+
+// Admin
+export const getAllUsers = async (req, res) => {
+  try {
+    const user = await User.find().sort({ createdAt: -1 });
+    if (!user) {
+      return res.status(404).json({
+          status: "error",
+          message: "No users found"
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Users fetch successfully",
+      data: user
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+        status: "error",
+        message: "Server error"
+    });
+  }
+}
