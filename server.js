@@ -3,10 +3,12 @@ import dotenv from "dotenv";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+
 // Database connection
 import connectDB from "./config/mongoDB/db.js";
 
 import { errorHandler } from "./middlewares/error.middleware.js";
+
 // Route files
 import authRoutes from "./routes/auth/auth.routes.js";
 import brandRoutes from "./routes/brand.routes.js";
@@ -78,6 +80,7 @@ app.use("/v1/api", authRoutes);
 
 // Frontend authentication routes
 app.use("/v1/api", userRoutes);
+
 
 app.use(errorHandler); // Custom error handling middleware
 

@@ -6,23 +6,8 @@ import { protect } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get(
-    "/contacts", 
-    protect, 
-    isAdmin, 
-    getAllContacts
-);
-
-router.post(
-    "/contact",
-    saveContactInfo
-);
-
-router.delete(
-    "/contact/delete/:id",
-    protect, 
-    isAdmin, 
-    deleteContactInfo
-);
+router.get("/admin/contacts", protect, isAdmin, getAllContacts);
+router.post("/contact", saveContactInfo); // Public route to save contact info
+router.delete("/admin/contact/:id",protect, isAdmin, deleteContactInfo);
 
 export default router;
