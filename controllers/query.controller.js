@@ -140,7 +140,7 @@ export const deleteContactInfo = async (req, res) => {
 
         return res.status(200).json({
             status: "success",
-            message: "Successfully deleted contact"
+            message: "Contact data deleted successfully"
         });
 
     } catch (error) {
