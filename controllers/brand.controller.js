@@ -4,10 +4,13 @@ import Brand from '../models/brand.model.js';
 
 export const getAllBrands = async (req, res) => {
     try {
+
         const { search } = req.query; // Extract search query parameter from the request
+
         let query = {}; // Initialize an empty query object
 
         if (search) {
+
             query = { // If a search query is provided, construct a query to search for brands by name or slug
                 $or: [
                     { brand_name: { $regex: search, $options: "i" } }, // Case-insensitive search for brand name
@@ -21,16 +24,17 @@ export const getAllBrands = async (req, res) => {
                     .sort({ createdAt: "desc" });
 
         return res.status(200).json({
+            status: "success",
             message: "Fetching all brands", 
-            status: "success", 
             brand: brands
         });
 
     } catch (error) {
         console.error("Error fetching models", error);
+
         return res.status(500).json({
-            message: "Server Error", 
-            status: "error"
+            status: "error",
+            message: "Server Error"
         });
 
     }
@@ -38,14 +42,15 @@ export const getAllBrands = async (req, res) => {
 
 export const createBrand = async (req, res) => {
     try {
+
         const { brand_name } = req.body;
         
         const brand_image_url = req.file ? `uploads/brands/${req.file.filename}` : null;
 
         if (!brand_name) {
             return res.status(400).json({
-                message: "Brand name is required",
-                status: "error"
+                status: "error",
+                message: "Brand name is required"
             });
         }
 
@@ -57,66 +62,82 @@ export const createBrand = async (req, res) => {
         await newBrand.save();
 
         return res.status(200).json({
+            status: "success",
             message: "Brand created successfully", 
-            status: "success", 
             brand: newBrand
         });
+
     } catch (error) {
+
         if (error.code === 11000 && error.keyPattern?.brand_name) {
+
             return res.status(400).json({
-                message: "Brand name already exists",
-                status: "error"
+                status: "error",
+                message: "Brand name already exists"
             });
         }
+
         console.error("Error creating brand:", error);
+
         return res.status(500).json({
-            message: "Server Error", 
-            status: "error"
+            status: "error",
+            message: "Server Error"
         });
     }
 }
 
 export const getBrand = async (req, res) => {
     try {
+
         const { id } = req.params;
+
         const brand = await Brand.findById(id);
+
         if (!brand) {
             return res.status(404).json({ 
-                message: "Brand not found", 
-                status: "error" 
+                status: "error",
+                message: "Brand not found" 
             });
         }
         return res.status(200).json({
-            message: "Brand fetched successfully",
             status: "success",
+            message: "Brand fetched successfully",
             data: brand
         });
+
     } catch (error) {
         console.error("Error brand fetching...:", error);
+
         return res.status(500).json({ 
-            message: "Server Error", 
-            status: "error" 
+            status: "error",
+            message: "Server Error" 
         });
     }
 }
 
 export const updateBrand = async (req, res) => {
     try {
+
         const { id } = req.params;
-        const { brand_name, brand_slug } = req.body;
+
+        const { 
+            brand_name, 
+            brand_slug 
+        } = req.body;
 
         const brand = await Brand.findById(id);
+
         if (!brand) {
-            return res.status(404).json({ 
-                message: "Brand not found", 
-                status: "error" 
+            return res.status(404).json({
+                status: "error", 
+                message: "Brand not found" 
             });
         }
 
         if (!brand_name || brand_name.trim() === '') {
-            return res.status(400).json({ 
-                message: "Brand name is required", 
-                status: "error" 
+            return res.status(400).json({
+                status: "error", 
+                message: "Brand name is required"
             });
         }
 
@@ -125,11 +146,13 @@ export const updateBrand = async (req, res) => {
         if (req.file) {
 
             if (brand.brand_image_url) {
+
                 const oldBrandImage = path.join(
                     process.cwd(),
                     'public',
                     brand.brand_image_url
                 );
+
                 if (fs.existsSync(oldBrandImage)) {
                     fs.unlinkSync(oldBrandImage);
                 }
@@ -141,49 +164,70 @@ export const updateBrand = async (req, res) => {
         brand.brand_name = brand_name ?? brand.brand_name;
         brand.brand_slug = brand_slug ?? brand.brand_slug;
         brand.brand_image_url = brand_image_url ?? brand.brand_image_url;
+
         await brand.save();
         
         return res.status(200).json({
-            message: "Brand updated successfully",
             status: "success",
+            message: "Brand updated successfully",
             data: brand
         });
+
     } catch (error) {
         console.error('Brand update error:', error.message);
-        return res.status(500).json({ message: error.message, status: 'error' });
+
+        return res.status(500).json({ 
+            status: 'error',
+            message: error.message 
+        });
     }
 }
 
 export const deleteBrand = async (req, res) => {
     try {
+
         const { id } = req.params;
+
         const brand = await Brand.findById(id);
+
         if (!brand) {
-            return res.status(404).json({ message: "Brand not found" });
+            return res.status(404).json({
+                status: "error" ,
+                message: "Brand not found" 
+            });
         }
+
         if (brand.brand_image_url) {
+
             const imagePath = path.join(
                 process.cwd(),
                 'public',
                 brand.brand_image_url
             );
+
             if (fs.existsSync(imagePath)) {
                 fs.unlinkSync(imagePath);
             } else {
                 console.warn("Image file does not exist:", imagePath);
             }
         }
+
         await Brand.findByIdAndDelete(id);
+
         return res.status(200).json({ 
-            message: "Brand deleted successfully", 
-            status: "success" 
+            status: "success",
+            message: "Brand deleted successfully"
         });
+
     } catch (error) {
+
         console.error("Error deleting brand:", error);
+
         return res.status(500).json({ 
-            message: "Server error", 
-            status: "error" 
+            status: "error", 
+            message: "Server error"
         });
 
     }
+
 }
