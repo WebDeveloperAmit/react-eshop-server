@@ -141,8 +141,8 @@ export const updateSlider = async (req, res) => {
 
         if (!slider) {
             return res.status(404).json({ 
-                message: "Slider not found",
-                status: "error"
+                status: "error",
+                message: "Slider not found"
             });
         }
 
@@ -152,8 +152,8 @@ export const updateSlider = async (req, res) => {
             (slider_sub_heading !== undefined && !slider_sub_heading.trim())
         ) {
             return res.status(400).json({ 
-                message: "All fields are required",
-                status: "error"
+                status: "error",
+                message: "All fields are required"
             });
         }
 
@@ -162,6 +162,7 @@ export const updateSlider = async (req, res) => {
         if (req.file) {
             
             if (slider.slider_image_url) {
+
                 const oldImagePath = path.join(
                     process.cwd(),
                     'public',
@@ -185,17 +186,22 @@ export const updateSlider = async (req, res) => {
         await slider.save();
 
         return res.status(200).json({ 
-            message: "Slider updated successfully", 
-            status: "success", 
+            status: "success",
+            message: "Slider updated successfully",
             data: slider 
         });
+
     } catch (error) {
+
         console.error("Error updating slider:", error);
-        return res.status(500).json({ 
-            message: "Server Error", 
-            status: "error" 
+
+        return res.status(500).json({
+            status: "error", 
+            message: "Server Error"
         });
+
     }
+
 }
 
 export const deleteSlider = async (req, res) => {
